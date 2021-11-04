@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App", "App\App.csproj", "{69ED6AC2-1A00-46D0-A184-A02CEAA5106A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableTennisDomain", "TableTennisDomain\TableTennisDomain.csproj", "{7248DD73-F79E-4CA0-A0D9-DB2A308BA1E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{82F84E17-2A19-41DC-8FE1-F0D69289B2E0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69ED6AC2-1A00-46D0-A184-A02CEAA5106A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69ED6AC2-1A00-46D0-A184-A02CEAA5106A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69ED6AC2-1A00-46D0-A184-A02CEAA5106A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69ED6AC2-1A00-46D0-A184-A02CEAA5106A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7248DD73-F79E-4CA0-A0D9-DB2A308BA1E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7248DD73-F79E-4CA0-A0D9-DB2A308BA1E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7248DD73-F79E-4CA0-A0D9-DB2A308BA1E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7248DD73-F79E-4CA0-A0D9-DB2A308BA1E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82F84E17-2A19-41DC-8FE1-F0D69289B2E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82F84E17-2A19-41DC-8FE1-F0D69289B2E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82F84E17-2A19-41DC-8FE1-F0D69289B2E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82F84E17-2A19-41DC-8FE1-F0D69289B2E0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
