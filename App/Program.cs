@@ -6,8 +6,8 @@ namespace App
     {
         private static void Main(string[] args)
         {
-            var p = new TableTennisDomain.Player("Pl", 100);
-            Console.WriteLine(p);
+            var tgBot = new TelegramBot();
+            Console.ReadLine();
         }
     }
 }
