@@ -9,4 +9,9 @@
       <ProjectReference Include="..\TableTennisDomain\TableTennisDomain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Telegram.Bot" Version="17.0.0-alpha.3" />
+      <PackageReference Include="Telegram.Bot.Extensions.Polling" Version="1.0.0-alpha.1" />
+    </ItemGroup>
+
 </Project>
