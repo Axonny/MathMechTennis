@@ -1,49 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using TableTennisDomain.Infrastructure;
+using System.Data;
 
 namespace TableTennisDomain
 {
     public class Match : IIdentifiable<string>
     {
-        public string Id { get; private set; }
+        public string Id { get; }
 
-        public DateTime Date;
-        public IReadOnlyList<Game> Games { get; private set; }
+        public DateTime Date { get; }
         
-        public IReadOnlyList<Player> FirstTeam { get; private set; }
-        public IReadOnlyList<Player> SecondTeam { get; private set; }
+        public Player FirstPlayer { get; }
+        public Player SecondPlayer { get; }
+        
+        public int GamesWonByFirstPlayer { get; }
+        public int GamesWonBySecondPlayer { get; }
 
-        public IReadOnlyList<Player> Winners
+        public Player Winner
         {
             get
             {
-                return Status switch
-                {
-                    GameStatus.Draw => new List<Player>(),
-                    GameStatus.FirstTeamWon => FirstTeam,
-                    _ => SecondTeam
-                };
+                if (GamesWonByFirstPlayer > GamesWonBySecondPlayer)
+                    return FirstPlayer;
+                if (GamesWonByFirstPlayer < GamesWonBySecondPlayer)
+                    return SecondPlayer;
+                throw new DataException("Match ended in a draw");
             }
         }
 
-        public GameStatus Status
-        {
-            get
-            {
-                return Games.Select(game => game.Status)
-                    .GroupBy(status => status)
-                    .OrderByDescending(g => g.Count()).First().Key;
-            }
-        }
-
-        public Match(string id, List<Player> firstTeam, List<Player> secondTeam, List<Game> games, DateTime date = default)
+        public Match(string id, Player firstPlayer, Player secondPlayer, int gamesWonByFirstPlayer,
+            int gamesWonBySecondPlayer, DateTime date = default)
         {
             Id = id;
-            FirstTeam = firstTeam;
-            SecondTeam = secondTeam;
-            Games = games;
+            FirstPlayer = firstPlayer;
+            SecondPlayer = secondPlayer;
+            GamesWonByFirstPlayer = gamesWonByFirstPlayer;
+            GamesWonBySecondPlayer = gamesWonBySecondPlayer;
             Date = date == default ? DateTime.Now : date;
         }
     }
