@@ -1,13 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using TableTennisDomain.Infrastructure;
 
 namespace TableTennisDomain.Repositories
 {
-    public class RuntimeRepository<TItem> : IRepository<TItem>
+    public class RuntimeRepository<TKey, TItem> : IRepository<TKey, TItem> 
+        where TItem : IIdentifiable<TKey>
     {
-        private readonly Dictionary<string, TItem> storage = new();
-        
-        public TItem GetById(string id) => storage[id];
+        private readonly Dictionary<TKey, TItem> storage = new();
 
-        public void SaveOrUpdate(string id, TItem obj) => storage[id] = obj;
+        public List<TItem> GetAll() => storage.Values.ToList();
+
+        public TItem GetById(TKey id) => storage[id];
+
+        public void SaveOrUpdate(TItem obj) => storage[obj.Id] = obj;
     }
 }

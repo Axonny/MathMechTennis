@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TableTennisDomain.Infrastructure;
 
 namespace TableTennisDomain
 {
-    public class Match
+    public class Match : IIdentifiable<string>
     {
         public string Id { get; private set; }
 

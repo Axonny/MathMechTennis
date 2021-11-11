@@ -1,10 +1,12 @@
-﻿namespace TableTennisDomain
+﻿using TableTennisDomain.Infrastructure;
+
+namespace TableTennisDomain
 {
-    public sealed record Player(string Name, int Rating)
+    public record Player(long Id, int Rating) : IIdentifiable<long>
     {
         public override string ToString()
         {
-            return $"{nameof(Name)}: {Name}; {nameof(Rating)}: {Rating}";
+            return $"{nameof(Id)}: {Id}; {nameof(Rating)}: {Rating}";
         }
     }
 }

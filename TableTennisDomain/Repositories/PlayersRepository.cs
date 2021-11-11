@@ -1,6 +1,4 @@
 ﻿namespace TableTennisDomain.Repositories
 {
-    public class PlayersRepository : RuntimeRepository<Player>
-    {
-    }
+    public class PlayersRepository : RuntimeRepository<long, Player> { }
 }

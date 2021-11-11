@@ -1,8 +1,13 @@
-﻿namespace TableTennisDomain.Repositories
+﻿using System.Collections.Generic;
+using TableTennisDomain.Infrastructure;
+
+namespace TableTennisDomain.Repositories
 {
-    public interface IRepository<TItem>
+    public interface IRepository<TKey, TItem>
+        where TItem : IIdentifiable<TKey>
     {
-        TItem GetById(string id);
-        void SaveOrUpdate(string id, TItem obj);
+        List<TItem> GetAll();
+        TItem GetById(TKey id);
+        void SaveOrUpdate(TItem obj);
     }
 }

@@ -10,12 +10,11 @@ namespace App
 {
     public class TelegramBot
     {
-        private static string Token => "";
         private static int AdminId => 0;
 
-        public TelegramBot()
+        public TelegramBot(string token)
         {
-            var bot = new TelegramBotClient(Token);
+            var bot = new TelegramBotClient(token);
             var cts = new CancellationTokenSource();
             var cancellationToken = cts.Token;
             var receiverOptions = new ReceiverOptions();
