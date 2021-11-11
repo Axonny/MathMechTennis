@@ -1,6 +1,6 @@
 ﻿using TableTennisDomain.Infrastructure;
 
-namespace TableTennisDomain.Repositories
+namespace App.Rating
 {
     public record EloRecord(long Id, long Rating) : IIdentifiable<long>;
 }

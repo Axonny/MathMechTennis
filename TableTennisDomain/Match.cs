@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using TableTennisDomain.Infrastructure;
 
 namespace TableTennisDomain
 {
@@ -9,30 +10,30 @@ namespace TableTennisDomain
 
         public DateTime Date { get; }
         
-        public Player FirstPlayer { get; }
-        public Player SecondPlayer { get; }
+        public long FirstPlayerId { get; }
+        public long SecondPlayerId { get; }
         
         public int GamesWonByFirstPlayer { get; }
         public int GamesWonBySecondPlayer { get; }
 
-        public Player Winner
+        public long Winner
         {
             get
             {
                 if (GamesWonByFirstPlayer > GamesWonBySecondPlayer)
-                    return FirstPlayer;
+                    return FirstPlayerId;
                 if (GamesWonByFirstPlayer < GamesWonBySecondPlayer)
-                    return SecondPlayer;
+                    return SecondPlayerId;
                 throw new DataException("Match ended in a draw");
             }
         }
 
-        public Match(string id, Player firstPlayer, Player secondPlayer, int gamesWonByFirstPlayer,
+        public Match(string id, long firstPlayerId, long secondPlayerId, int gamesWonByFirstPlayer,
             int gamesWonBySecondPlayer, DateTime date = default)
         {
             Id = id;
-            FirstPlayer = firstPlayer;
-            SecondPlayer = secondPlayer;
+            FirstPlayerId = firstPlayerId;
+            SecondPlayerId = secondPlayerId;
             GamesWonByFirstPlayer = gamesWonByFirstPlayer;
             GamesWonBySecondPlayer = gamesWonBySecondPlayer;
             Date = date == default ? DateTime.Now : date;

@@ -1,6 +1,7 @@
 using System.Linq;
+using App;
+using App.Rating;
 using NUnit.Framework;
-using TableTennisDomain.Repositories;
 
 namespace Tests
 {
