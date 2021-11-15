@@ -2,5 +2,15 @@
 
 namespace App.Rating
 {
-    public record EloRecord(long Id, long Rating) : IIdentifiable<long>;
+    public class EloRecord : IIdentifiable<long>
+    {
+        public long Id { get; }
+        public long Rating { get; set; }
+
+        public EloRecord(long id, long rating)
+        {
+            Id = id;
+            Rating = rating;
+        }
+    }
 }
