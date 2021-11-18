@@ -3,5 +3,5 @@
 namespace App
 {
     //                 ChatId
-    public record User(long Id, long playerId) : IIdentifiable<long> {}
+    public record User(long Id, long PlayerId, string Username) : IIdentifiable<long> {}
 }
