@@ -14,16 +14,19 @@ namespace App
     public class TelegramBot
     {
         private static long BugReportChannelId => -1001610224482;
-        private static Regex matchResultRegex = new Regex(@"@(\w+) (\d):(\d)"); 
+        private static Regex matchResultRegex = new Regex(@"@(\w+) (\d):(\d)");
+
+        private readonly AppPresenter<EloRecord> presenter;
 
         public TelegramBot(string token)
         {
-            presenter = new AppPresenter<EloRecord>(
-                this,
-                new MatchesRepository(),
-                new UserRepository(),
-                new EloRating());
             var bot = new TelegramBotClient(token);
+            
+            presenter = new AppPresenter<EloRecord>(
+                new MatchesRepository(),
+                new PlayersRepository(),
+                new EloRating());
+            
             var receiverOptions = new ReceiverOptions();
             bot.StartReceiving(
                 HandleUpdateAsync,
@@ -36,12 +39,19 @@ namespace App
         {
             if (update.Message is { } message)
             {
-                if (message.Text != null && message.Text.Contains('/'))
-                    await HandleCommandAsync(bot, message);
-                else if (message.Text != null && matchResultRegex.IsMatch(message.Text))
-                    await HandleSetResultsAsync(bot, message);
-                else
-                    await bot.SendTextMessageAsync(message.Chat, "Use Commands");
+                try
+                {
+                    if (message.Text != null && message.Text.Contains('/'))
+                        await HandleCommandAsync(bot, message);
+                    else if (message.Text != null && matchResultRegex.IsMatch(message.Text))
+                        await HandleSetResultsAsync(bot, message);
+                    else
+                        await bot.SendTextMessageAsync(message.Chat, "Use Commands");
+                }
+                catch (Exception e)
+                {
+                    await bot.SendTextMessageAsync(message.Chat, "Something was wrong");
+                }
             }
         }
 
@@ -56,9 +66,19 @@ namespace App
         private async Task HandleCommandAsync(ITelegramBotClient bot, Message message)
         {
             if (message.Text == "/start")
+            {
+                await presenter.RegisterPlayer(message.Chat);
                 await bot.SendTextMessageAsync(message.Chat, "Hello");
-            else if(message.Text == "/set_result")
-                await bot.SendTextMessageAsync(message.Chat, "Send Match result. Format @opponent yourScore:opponentScore");
+            }
+            else if (message.Text == "/set_result")
+                await bot.SendTextMessageAsync(
+                    message.Chat, 
+                    "Send Match result. Format @opponent yourScore:opponentScore");
+            else if (message.Text == "/show_rating")
+            {
+                var rating = await presenter.GetRating(message.Chat.Username);
+                await bot.SendTextMessageAsync(message.Chat, $"You rating is {rating}");
+            }
             else
                 await bot.SendTextMessageAsync(message.Chat, "I dont know this command :(");
         }
@@ -70,8 +90,8 @@ namespace App
             var player2 = groups[1].Value;
             var gamesWon1 = int.Parse(groups[2].Value);
             var gamesWon2 = int.Parse(groups[3].Value);
-            // ToDo Convert USERNAME to PLAYER_ID
-            // ToDo Call AppPresenter
+
+            await presenter.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
             await bot.SendTextMessageAsync(message.Chat, "Match has been registered!");
         }
     }
