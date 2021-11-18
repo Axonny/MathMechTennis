@@ -8,7 +8,9 @@ namespace App
     {
         private static void Main(string[] args)
         {
-            var tgBot = new TelegramBot(Environment.GetEnvironmentVariable("TgBotToken", EnvironmentVariableTarget.User));
+            var tgBot = new TelegramBot(Environment.GetEnvironmentVariable(
+                "TgBotToken", 
+                EnvironmentVariableTarget.User));
             Console.ReadLine();
         }
     }

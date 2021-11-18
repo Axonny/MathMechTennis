@@ -48,7 +48,7 @@ namespace App
                     else
                         await bot.SendTextMessageAsync(message.Chat, "Use Commands");
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     await bot.SendTextMessageAsync(message.Chat, "Something was wrong");
                 }
