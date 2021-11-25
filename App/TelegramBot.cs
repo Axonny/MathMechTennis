@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using App.Rating;
 using TableTennisDomain.DomainRepositories;
 using Telegram.Bot;
-using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 
 namespace App
 {
+    [SuppressMessage("ReSharper", "MethodSupportsCancellation")]
+    [SuppressMessage("ReSharper", "CA2016")]
     public class TelegramBot
     {
         private static long BugReportChannelId => -1001610224482;
@@ -26,13 +28,22 @@ namespace App
                 new MatchesRepository(),
                 new PlayersRepository(),
                 new EloRating());
+
+            var receiverOptions = new ReceiverOptions {ThrowPendingUpdates = true};
             
-            var receiverOptions = new ReceiverOptions();
             bot.StartReceiving(
                 HandleUpdateAsync,
                 HandleErrorAsync,
                 receiverOptions
             );
+        }
+        
+        private static async Task HandleErrorAsync(
+            ITelegramBotClient botClient, 
+            Exception exception, 
+            CancellationToken _)
+        {
+            await botClient.SendTextMessageAsync(BugReportChannelId, exception.ToString());
         }
 
         private async Task HandleUpdateAsync(ITelegramBotClient bot, Update update, CancellationToken _)
@@ -48,18 +59,12 @@ namespace App
                     else
                         await bot.SendTextMessageAsync(message.Chat, "Use Commands");
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
                     await bot.SendTextMessageAsync(message.Chat, "Something was wrong");
+                    await Console.Out.WriteLineAsync(exception.ToString());
+                    await bot.SendTextMessageAsync(BugReportChannelId, exception.ToString());
                 }
-            }
-        }
-
-        private async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken _)
-        {
-            if (exception is ApiRequestException apiRequestException)
-            {
-                await botClient.SendTextMessageAsync(BugReportChannelId, apiRequestException.ToString());
             }
         }
 
