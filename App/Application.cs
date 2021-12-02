@@ -48,7 +48,7 @@ namespace App
             return Task.Run(() =>
             {
                 var player = new Player(nickname, chatId);
-                playersRepository.SaveOrUpdate(player);
+                playersRepository.Save(player);
                 RatingSystem.RegisterNewPlayer(player.Id);
             });
         }

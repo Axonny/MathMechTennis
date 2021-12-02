@@ -18,8 +18,8 @@ namespace App.Rating
             var player1Record = RatingByPlayerId.GetById(match.FirstPlayerId);
             var player2Record = RatingByPlayerId.GetById(match.SecondPlayerId);
             Calculate(player1Record, player2Record, match.Winner == match.FirstPlayerId);
-            RatingByPlayerId.SaveOrUpdate(player1Record);
-            RatingByPlayerId.SaveOrUpdate(player2Record);
+            RatingByPlayerId.Update(player1Record);
+            RatingByPlayerId.Update(player2Record);
         }
 
         public abstract void RegisterNewPlayer(ObjectId id);

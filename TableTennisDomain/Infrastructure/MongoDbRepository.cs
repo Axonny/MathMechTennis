@@ -22,7 +22,7 @@ namespace TableTennisDomain.Infrastructure
             return Collection.Find(x => x.Id == id).First();
         }
         
-        public void SaveOrUpdate(TItem obj)
+        public void Update(TItem obj)
         {
             if (obj.Id != ObjectId.Empty)
                 Collection.ReplaceOne(x => x.Id == obj.Id, obj);

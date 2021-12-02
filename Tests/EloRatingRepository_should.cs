@@ -29,7 +29,7 @@ namespace Tests
             var ids = records.Select(record => record.Id);
 
             foreach (var record in records) 
-                repo.SaveOrUpdate(record);
+                repo.Save(record);
 
             Assert.That(ids.Select(id => repo.GetById(id)).ToList(), Is.EquivalentTo(records));
         }
