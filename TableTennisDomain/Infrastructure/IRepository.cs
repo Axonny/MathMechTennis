@@ -5,5 +5,6 @@
     {
         TItem GetById(TKey id);
         void SaveOrUpdate(TItem obj);
+        void Save(TItem obj);
     }
 }

@@ -1,9 +1,19 @@
 ﻿using System;
+using MongoDB.Bson;
 
 namespace App.Rating
 {
     public class EloRating : RatingSystem<EloRecord>
     {
+        private const int StartElo = 1000;
+        
+        public EloRating() : base(new EloRatingRepository()) { }
+
+        public override void RegisterNewPlayer(ObjectId id)
+        {
+            RatingByPlayerId.Save(new EloRecord(id, StartElo, 0));
+        }
+
         protected override void Calculate(EloRecord player1Record, EloRecord player2Record, bool isFirstWinner)
         {
             var player1Score = 0;
@@ -24,10 +34,10 @@ namespace App.Rating
             return 1 / (1 + Math.Pow(10, (player2Rating - player1Rating) / 400.0));
         }
 
-        private static long CalculatePlayerRating(EloRecord player1Record, EloRecord player2Record, int player1Score)
+        private static int CalculatePlayerRating(EloRecord player1Record, EloRecord player2Record, int player1Score)
         {
             return player1Record.Rating
-                   + (long) Math.Round(GetFactor(player1Record)
+                   + (int) Math.Round(GetFactor(player1Record)
                                        * (player1Score - GetExpectedScore(player1Record.Rating, player2Record.Rating)));
         }
 

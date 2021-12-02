@@ -4,11 +4,10 @@ using MongoDB.Bson;
 using TableTennisDomain;
 using TableTennisDomain.DomainRepositories;
 using TableTennisDomain.Infrastructure;
-using Telegram.Bot.Types;
 
 namespace App
 {
-    public class AppPresenter<TRatingRecord> 
+    public class Application<TRatingRecord> 
         where TRatingRecord : IIdentifiable<ObjectId>
     {
         public RatingSystem<TRatingRecord> RatingSystem { get; }
@@ -16,7 +15,7 @@ namespace App
         private readonly MatchesRepository matchesRepository;
         private readonly PlayersRepository playersRepository;
 
-        public AppPresenter(
+        public Application(
             MatchesRepository matchesRepository,
             PlayersRepository playersRepository,
             RatingSystem<TRatingRecord> ratingSystem)
@@ -26,25 +25,32 @@ namespace App
             RatingSystem = ratingSystem;
         }
 
-        public Task RegisterMatch(string userName1, string userName2, int gamesWon1, int gamesWon2)
+        public Task RegisterMatch(string nickname1, string nickname2, int gamesWon1, int gamesWon2)
         {
             var match = new Match(
-                playersRepository.GetPlayerIdByUsername(userName1), 
-                playersRepository.GetPlayerIdByUsername(userName2), 
+                playersRepository.GetPlayerIdByUsername(nickname1), 
+                playersRepository.GetPlayerIdByUsername(nickname2), 
                 gamesWon1,
                 gamesWon2);
             
             return Task.Run(() =>
             {
-                matchesRepository.SaveOrUpdate(match);
+                matchesRepository.Save(match);
                 RatingSystem.UpdateRating(match);
             });
         }
 
-        public Task RegisterPlayer(Chat chat)
+        public Task RegisterPlayer(string nickname, long chatId)
         {
-            return Task.Run(() => 
-                playersRepository.SaveOrUpdate(new Player(chat.Id, chat.Username)));
+            if (playersRepository.TryGetPlayerIdByChatId(chatId, out var _))
+                return Task.CompletedTask;
+            
+            return Task.Run(() =>
+            {
+                var player = new Player(nickname, chatId);
+                playersRepository.SaveOrUpdate(player);
+                RatingSystem.RegisterNewPlayer(player.Id);
+            });
         }
 
         public Task<TRatingRecord> GetRating(string username)
