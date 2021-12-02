@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MongoDB.Bson;
 using TableTennisDomain;
 using TableTennisDomain.Infrastructure;
 
 namespace App.Rating
 {
-    public abstract class RatingSystem<TRecord> where TRecord : IIdentifiable<long>
+    public abstract class RatingSystem<TRecord> where TRecord : IIdentifiable<ObjectId>
     {
-        public LongKeyRepository<TRecord> RatingByPlayerId { get; }
+        public IRepository<ObjectId, TRecord> RatingByPlayerId { get; }
         
         public void UpdateRating(Match match)
         {

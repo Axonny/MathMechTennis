@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using App.Rating;
+using MongoDB.Bson;
 using TableTennisDomain;
 using TableTennisDomain.DomainRepositories;
 using TableTennisDomain.Infrastructure;
@@ -10,7 +9,7 @@ using Telegram.Bot.Types;
 namespace App
 {
     public class AppPresenter<TRatingRecord> 
-        where TRatingRecord : IIdentifiable<long>
+        where TRatingRecord : IIdentifiable<ObjectId>
     {
         public RatingSystem<TRatingRecord> RatingSystem { get; }
 
@@ -30,7 +29,6 @@ namespace App
         public Task RegisterMatch(string userName1, string userName2, int gamesWon1, int gamesWon2)
         {
             var match = new Match(
-                matchesRepository.GetUniqueId(), 
                 playersRepository.GetPlayerIdByUsername(userName1), 
                 playersRepository.GetPlayerIdByUsername(userName2), 
                 gamesWon1,
@@ -46,7 +44,7 @@ namespace App
         public Task RegisterPlayer(Chat chat)
         {
             return Task.Run(() => 
-                playersRepository.SaveOrUpdate(new Player(playersRepository.GetUniqueId(), chat.Id, chat.Username)));
+                playersRepository.SaveOrUpdate(new Player(chat.Id, chat.Username)));
         }
 
         public Task<TRatingRecord> GetRating(string username)

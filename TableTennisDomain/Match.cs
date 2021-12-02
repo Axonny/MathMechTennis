@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Data;
+using MongoDB.Bson;
 using TableTennisDomain.Infrastructure;
 
 namespace TableTennisDomain
 {
-    public class Match : IIdentifiable<string>
+    public class Match : IIdentifiable<ObjectId>
     {
-        public string Id { get; }
+        public ObjectId Id { get; }
 
         public DateTime Date { get; }
         
-        public long FirstPlayerId { get; }
-        public long SecondPlayerId { get; }
+        public ObjectId FirstPlayerId { get; }
+        public ObjectId SecondPlayerId { get; }
         
         public int GamesWonByFirstPlayer { get; }
         public int GamesWonBySecondPlayer { get; }
 
-        public long Winner
+        public ObjectId Winner
         {
             get
             {
@@ -28,10 +29,9 @@ namespace TableTennisDomain
             }
         }
 
-        public Match(string id, long firstPlayerId, long secondPlayerId, int gamesWonByFirstPlayer,
+        public Match(ObjectId firstPlayerId, ObjectId secondPlayerId, int gamesWonByFirstPlayer,
             int gamesWonBySecondPlayer, DateTime date = default)
         {
-            Id = id;
             FirstPlayerId = firstPlayerId;
             SecondPlayerId = secondPlayerId;
             GamesWonByFirstPlayer = gamesWonByFirstPlayer;

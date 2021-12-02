@@ -1,17 +1,11 @@
-﻿using System;
-using System.Security.Cryptography;
-using TableTennisDomain.Infrastructure;
+﻿using TableTennisDomain.Infrastructure;
 
 namespace TableTennisDomain.DomainRepositories
 {
-    public class MatchesRepository : RuntimeRepository<string, Match>
+    public class MatchesRepository : MongoDbRepository<Match>
     {
-        public override string GetUniqueId()
-        {
-            // TODO: rewrite
-            var matches = GetAll();
-            
-            return BitConverter.ToString(SHA256.HashData(BitConverter.GetBytes(matches.Count)));
-        }
+        public MatchesRepository() 
+            : base("mongodb://127.0.0.1:27017", "MathMechTennis", "Matches")
+        { }
     }
 }

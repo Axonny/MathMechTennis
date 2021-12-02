@@ -1,15 +1,16 @@
-﻿using TableTennisDomain.Infrastructure;
+﻿using MongoDB.Bson;
+using TableTennisDomain.Infrastructure;
 
 namespace App.Rating
 {
-    public class EloRecord : IIdentifiable<long>
+    public class EloRecord : IIdentifiable<ObjectId>
     {
-        public long Id { get; }
+        public ObjectId Id { get; }
         public long Rating { get; set; }
         
         public int MatchCount { get; set; }
 
-        public EloRecord(long id, long rating, int matchCount)
+        public EloRecord(ObjectId id, long rating, int matchCount)
         {
             Id = id;
             Rating = rating;
