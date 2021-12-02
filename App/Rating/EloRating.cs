@@ -15,11 +15,13 @@ namespace App.Rating
             
             player1Record.Rating = CalculatePlayerRating(player1Record, player2Record, player1Score);
             player2Record.Rating = CalculatePlayerRating(player2Record, player1Record, player2Score);
+            player1Record.MatchCount++;
+            player2Record.MatchCount++;
         }
 
         private static double GetExpectedScore(long player1Rating, long player2Rating)
         {
-            return 1 / (1 + Math.Pow(10, (player2Rating - player1Rating) / 400));
+            return 1 / (1 + Math.Pow(10, (player2Rating - player1Rating) / 400.0));
         }
 
         private static long CalculatePlayerRating(EloRecord player1Record, EloRecord player2Record, int player1Score)
@@ -31,6 +33,8 @@ namespace App.Rating
 
         private static int GetFactor(EloRecord record)
         {
+            if (record.MatchCount <= 30)
+                return 40;
             if (record.Rating >= 2400)
                 return 10;
             return 20;

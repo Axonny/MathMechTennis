@@ -38,11 +38,11 @@ namespace Tests
         {
             return new[]
             {
-                new EloRecord(10000, 10),
-                new EloRecord(2100, 20),
-                new EloRecord(11, 40),
-                new EloRecord(5000, 35),
-                new EloRecord(1200, 0)
+                new EloRecord(10000, 10, 0),
+                new EloRecord(2100, 20, 0),
+                new EloRecord(11, 40, 0 ),
+                new EloRecord(5000, 35, 0),
+                new EloRecord(1200, 0, 0)
             };
         }
     }
