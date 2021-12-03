@@ -7,15 +7,15 @@ namespace TableTennisDomain
 {
     public class Match : IIdentifiable<ObjectId>
     {
-        public ObjectId Id { get; }
+        public ObjectId Id { get; set; }
 
-        public DateTime Date { get; }
+        public DateTime Date { get; set; }
         
-        public ObjectId FirstPlayerId { get; }
-        public ObjectId SecondPlayerId { get; }
+        public ObjectId FirstPlayerId { get; set; }
+        public ObjectId SecondPlayerId { get; set; }
         
-        public int GamesWonByFirstPlayer { get; }
-        public int GamesWonBySecondPlayer { get; }
+        public int GamesWonByFirstPlayer { get; set; }
+        public int GamesWonBySecondPlayer { get; set; }
 
         public ObjectId Winner
         {

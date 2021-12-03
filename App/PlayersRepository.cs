@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using System;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using TableTennisDomain.Infrastructure;
 
@@ -7,14 +8,19 @@ namespace App
     public class PlayersRepository : MongoDbRepository<Player>
     {
         public PlayersRepository() 
-            : base("mongodb://127.0.0.1:27017", "MathMechTennis", "Users")
+            : base("Players")
         { }
 
-        public ObjectId GetPlayerIdByUsername(string username)
+        public ObjectId GetPlayerIdByUsername(string nickname)
         {
-            var filter = Builders<BsonDocument>.Filter.Eq("Username", username);
-            var bson = Collection.Find(filter).First();
-            return bson.GetElement("_id").Value.AsObjectId;
+            var player = Collection.Find(p => p.Nickname == nickname).First();
+            return player.Id;
+        }
+
+        public bool TryGetPlayerIdByChatId(long chatId, out Player player)
+        {
+            player = Collection.Find(x => x.ChatId == chatId).FirstOrDefault();
+            return player != null;
         }
     }
 }

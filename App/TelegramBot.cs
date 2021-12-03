@@ -16,15 +16,15 @@ namespace App
     public class TelegramBot
     {
         private static long BugReportChannelId => -1001610224482;
-        private static Regex matchResultRegex = new Regex(@"@(\w+) (\d):(\d)");
+        private static Regex matchResultRegex = new Regex(@"@(\w+) (\d)[:;., ](\d)");
 
-        private readonly AppPresenter<EloRecord> presenter;
+        private readonly Application<EloRecord> application;
 
         public TelegramBot(string token)
         {
             var bot = new TelegramBotClient(token);
             
-            presenter = new AppPresenter<EloRecord>(
+            application = new Application<EloRecord>(
                 new MatchesRepository(),
                 new PlayersRepository(),
                 new EloRating());
@@ -72,7 +72,7 @@ namespace App
         {
             if (message.Text == "/start")
             {
-                await presenter.RegisterPlayer(message.Chat);
+                await application.RegisterPlayer(message.Chat.Username, message.Chat.Id);
                 await bot.SendTextMessageAsync(message.Chat, "Hello");
             }
             else if (message.Text == "/set_result")
@@ -81,7 +81,7 @@ namespace App
                     "Send Match result. Format @opponent yourScore:opponentScore");
             else if (message.Text == "/show_rating")
             {
-                var rating = await presenter.GetRating(message.Chat.Username);
+                var rating = await application.GetRating(message.Chat.Username);
                 await bot.SendTextMessageAsync(message.Chat, $"You rating is {rating}");
             }
             else
@@ -96,7 +96,7 @@ namespace App
             var gamesWon1 = int.Parse(groups[2].Value);
             var gamesWon2 = int.Parse(groups[3].Value);
 
-            await presenter.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
+            await application.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
             await bot.SendTextMessageAsync(message.Chat, "Match has been registered!");
         }
     }
