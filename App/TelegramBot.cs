@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using App.Dialogs.ChatDialog;
 using App.Rating;
+using Ninject;
 using TableTennisDomain.DomainRepositories;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
@@ -16,9 +18,8 @@ namespace App
     public class TelegramBot
     {
         private static long BugReportChannelId => -1001610224482;
-        private static Regex matchResultRegex = new Regex(@"@(\w+) (\d)[:;., ](\d)");
-
         private readonly Application<EloRecord> application;
+        private readonly Dictionary<long, ChatDialogGraph> dialogByChatId = new();
 
         public TelegramBot(string token)
         {
@@ -28,9 +29,9 @@ namespace App
                 new MatchesRepository(),
                 new PlayersRepository(),
                 new EloRating());
-
-            var receiverOptions = new ReceiverOptions {ThrowPendingUpdates = true};
             
+            var receiverOptions = new ReceiverOptions {ThrowPendingUpdates = true};
+
             bot.StartReceiving(
                 HandleUpdateAsync,
                 HandleErrorAsync,
@@ -40,10 +41,10 @@ namespace App
         
         private static async Task HandleErrorAsync(
             ITelegramBotClient botClient, 
-            Exception exception, 
+            Exception exception,
             CancellationToken _)
         {
-            await botClient.SendTextMessageAsync(BugReportChannelId, exception.ToString());
+            //await botClient.SendTextMessageAsync(BugReportChannelId, exception.ToString());
         }
 
         private async Task HandleUpdateAsync(ITelegramBotClient bot, Update update, CancellationToken _)
@@ -52,18 +53,25 @@ namespace App
             {
                 try
                 {
-                    if (message.Text != null && message.Text.Contains('/'))
-                        await HandleCommandAsync(bot, message);
-                    else if (message.Text != null && matchResultRegex.IsMatch(message.Text))
-                        await HandleSetResultsAsync(bot, message);
-                    else
-                        await bot.SendTextMessageAsync(message.Chat, "Use Commands");
+                    if (dialogByChatId.TryGetValue(message.Chat.Id, out var dialogGraph))
+                    {
+                        await Task.Run(() => dialogGraph.HandleMessage(new TelegramMessageAdapter(message)));
+                        return;
+                    }
+
+                    var isRegistered = application.IsRegisteredPlayer(message.Chat.Id);
+                    dialogGraph = ChatDialogGraphBuilder.Build(
+                        new TelegramChatUi(bot, message.Chat.Id), 
+                        application, 
+                        isRegistered ? "Default" : "Start");
+
+                    dialogByChatId[message.Chat.Id] = dialogGraph;
+                    await Task.Run(() => dialogGraph.HandleMessage(new TelegramMessageAdapter(message)));
                 }
                 catch (Exception exception)
                 {
-                    await bot.SendTextMessageAsync(message.Chat, "Something was wrong");
                     await Console.Out.WriteLineAsync(exception.ToString());
-                    await bot.SendTextMessageAsync(BugReportChannelId, exception.ToString());
+                    //await bot.SendTextMessageAsync(BugReportChannelId, exception.ToString());
                 }
             }
         }
@@ -86,18 +94,6 @@ namespace App
             }
             else
                 await bot.SendTextMessageAsync(message.Chat, "I dont know this command :(");
-        }
-
-        private async Task HandleSetResultsAsync(ITelegramBotClient bot, Message message)
-        {
-            var groups = matchResultRegex.Match(message.Text!).Groups;
-            var player1 = message.Chat.Username;
-            var player2 = groups[1].Value;
-            var gamesWon1 = int.Parse(groups[2].Value);
-            var gamesWon2 = int.Parse(groups[3].Value);
-
-            await application.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
-            await bot.SendTextMessageAsync(message.Chat, "Match has been registered!");
         }
     }
 }

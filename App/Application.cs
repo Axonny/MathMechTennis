@@ -7,7 +7,7 @@ using TableTennisDomain.Infrastructure;
 
 namespace App
 {
-    public class Application<TRatingRecord> 
+    public class Application<TRatingRecord> : IApplication
         where TRatingRecord : IIdentifiable<ObjectId>
     {
         public RatingSystem<TRatingRecord> RatingSystem { get; }
@@ -51,6 +51,11 @@ namespace App
                 playersRepository.Save(player);
                 RatingSystem.RegisterNewPlayer(player.Id);
             });
+        }
+
+        public bool IsRegisteredPlayer(long chatId)
+        {
+            return playersRepository.TryGetPlayerIdByChatId(chatId, out var player);
         }
 
         public Task<TRatingRecord> GetRating(string username)
