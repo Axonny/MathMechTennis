@@ -2,14 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using App.Dialogs.ChatDialog;
 
-namespace App.Dialogs
+namespace App.Dialogs.ChatDialog.Branches
 {
     [ChatBranch("/set_result")]
     public class MatchRegistrationBranch : DialogBranch<IChatMessage>
     {
-        private static readonly Regex matchResultRegex = new(@"@(\w+) (\d)[:;., ](\d)");
+        private static readonly Regex matchResultRegex = new(@"@(\w+) (\d+)[:;., ](\d+)");
 
         public override string Name => "Match";
 

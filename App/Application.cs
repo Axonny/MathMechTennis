@@ -57,6 +57,14 @@ namespace App
         {
             return playersRepository.TryGetPlayerIdByChatId(chatId, out var player);
         }
+        
+        //TODO: delete
+        public async Task<long> GetRatingValue(string nickname)
+        {
+            var record = (await GetRating(nickname)) as EloRecord;
+
+            return record.Rating;
+        }
 
         public Task<TRatingRecord> GetRating(string username)
         { 
