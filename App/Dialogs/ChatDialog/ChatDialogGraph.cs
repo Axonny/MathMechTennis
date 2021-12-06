@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -93,12 +94,14 @@ namespace App.Dialogs.ChatDialog
 
             try
             {
-                //No await - no exceptions
                 await CurrentBranch.RunAsync(this, messageQueue, currentBranchCancellationTokenSource.Token);
             }
-            catch (TaskCanceledException)
+            catch (Exception exception)
             {
-                //Console.WriteLine("Task was cancelled");
+                if (exception is TaskCanceledException)
+                    return;
+
+                BugReporter.SendReport(exception);
             }
         }
     }

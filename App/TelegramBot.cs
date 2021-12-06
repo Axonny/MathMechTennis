@@ -29,7 +29,13 @@ namespace App
                 new MatchesRepository(),
                 new PlayersRepository(),
                 new EloRating());
+
+            BugReporter.OnReportSend += async exception => 
+                await HandleErrorAsync(bot, exception, CancellationToken.None); 
             
+            BugReporter.OnReportSend += async exception => 
+                await Console.Out.WriteLineAsync(exception.ToString());
+
             var receiverOptions = new ReceiverOptions {ThrowPendingUpdates = true};
 
             bot.StartReceiving(
@@ -44,7 +50,7 @@ namespace App
             Exception exception,
             CancellationToken _)
         {
-            //await botClient.SendTextMessageAsync(BugReportChannelId, exception.ToString());
+            await botClient.SendTextMessageAsync(BugReportChannelId, exception.ToString());
         }
 
         private async Task HandleUpdateAsync(ITelegramBotClient bot, Update update, CancellationToken _)
@@ -58,20 +64,18 @@ namespace App
                         await Task.Run(() => dialogGraph.HandleMessage(new TelegramMessageAdapter(message)));
                         return;
                     }
-
-                    var isRegistered = application.IsRegisteredPlayer(message.Chat.Id);
+                    
                     dialogGraph = ChatDialogGraphBuilder.Build(
                         new TelegramChatUi(bot, message.Chat.Id), 
                         application, 
-                        isRegistered ? "Default" : "Start");
+                        application.IsRegisteredPlayer(message.Chat.Id) ? "Default" : "Start");
 
                     dialogByChatId[message.Chat.Id] = dialogGraph;
                     await Task.Run(() => dialogGraph.HandleMessage(new TelegramMessageAdapter(message)));
                 }
                 catch (Exception exception)
                 {
-                    await Console.Out.WriteLineAsync(exception.ToString());
-                    //await bot.SendTextMessageAsync(BugReportChannelId, exception.ToString());
+                    BugReporter.SendReport(exception);
                 }
             }
         }
