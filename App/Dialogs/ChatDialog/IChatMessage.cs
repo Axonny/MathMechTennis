@@ -2,7 +2,7 @@
 {
     public interface IChatMessage
     {
-        public string SenderUsername { get; }
+        public string Username { get; }
         public long ChatId { get; }
         public string Text { get; }
     }

@@ -3,7 +3,7 @@
 namespace App.Dialogs
 {
     [SuppressMessage("ReSharper", "CommentTypo")]
-    public interface IDialogGraph<TMessage>
+    public interface IBranchesManager<TMessage>
     {
         DialogBranch<TMessage> CurrentBranch { get; }
         void HandleMessage(TMessage message);

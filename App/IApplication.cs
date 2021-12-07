@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace App
 {
@@ -8,5 +9,6 @@ namespace App
         Task RegisterPlayer(string nickname, long chatId);
         bool IsRegisteredPlayer(long chatId);
         Task<long> GetRatingValue(string nickname);
+        Task<List<string>> GetLastMatchesInfos(string username, int count);
     }
 }

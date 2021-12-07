@@ -14,15 +14,15 @@ namespace App.Dialogs.ChatDialog.Branches
         }
         
         public override async Task RunAsync(
-            IDialogGraph<IChatMessage> dialogGraph, 
+            IBranchesManager<IChatMessage> branchesManager, 
             BufferBlock<IChatMessage> messageQueue, 
             CancellationToken token)
         {
             var message = await messageQueue.ReceiveAsync(token);
-            await Application.RegisterPlayer(message.SenderUsername, message.ChatId);
+            await Application.RegisterPlayer(message.Username, message.ChatId);
             await Ui.ShowMessage("Registration is completed. Try /help");
             
-            dialogGraph.StartBranchByName("Default");
+            branchesManager.StartBranchByName("Default");
         }
     }
 }

@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using App.Dialogs.ChatDialog;
 using App.Rating;
-using Ninject;
 using TableTennisDomain.DomainRepositories;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
@@ -19,7 +18,7 @@ namespace App
     {
         private static long BugReportChannelId => -1001610224482;
         private readonly Application<EloRecord> application;
-        private readonly Dictionary<long, ChatDialogGraph> dialogByChatId = new();
+        private readonly Dictionary<long, ChatBranchesManager> dialogByChatId = new();
 
         public TelegramBot(string token)
         {
@@ -30,8 +29,8 @@ namespace App
                 new PlayersRepository(),
                 new EloRating());
 
-            // BugReporter.OnReportSend += async exception => 
-            //     await HandleErrorAsync(bot, exception, CancellationToken.None); 
+            BugReporter.OnReportSend += async exception => 
+                await HandleErrorAsync(bot, exception, CancellationToken.None); 
             
             BugReporter.OnReportSend += async exception => 
                 await Console.Out.WriteLineAsync(exception.ToString());
@@ -59,45 +58,25 @@ namespace App
             {
                 try
                 {
-                    if (dialogByChatId.TryGetValue(message.Chat.Id, out var dialogGraph))
+                    if (dialogByChatId.TryGetValue(message.Chat.Id, out var manager))
                     {
-                        await Task.Run(() => dialogGraph.HandleMessage(new TelegramMessageAdapter(message)));
+                        await Task.Run(() => manager.HandleMessage(new TelegramMessageAdapter(message)));
                         return;
                     }
                     
-                    dialogGraph = ChatDialogGraphBuilder.Build(
+                    manager = ChatDialogGraphBuilder.Build(
                         new TelegramChatUi(bot, message.Chat.Id), 
                         application, 
                         application.IsRegisteredPlayer(message.Chat.Id) ? "Default" : "Start");
 
-                    dialogByChatId[message.Chat.Id] = dialogGraph;
-                    await Task.Run(() => dialogGraph.HandleMessage(new TelegramMessageAdapter(message)));
+                    dialogByChatId[message.Chat.Id] = manager;
+                    await Task.Run(() => manager.HandleMessage(new TelegramMessageAdapter(message)));
                 }
                 catch (Exception exception)
                 {
                     BugReporter.SendReport(exception);
                 }
             }
-        }
-
-        private async Task HandleCommandAsync(ITelegramBotClient bot, Message message)
-        {
-            if (message.Text == "/start")
-            {
-                await application.RegisterPlayer(message.Chat.Username, message.Chat.Id);
-                await bot.SendTextMessageAsync(message.Chat, "Hello");
-            }
-            else if (message.Text == "/set_result")
-                await bot.SendTextMessageAsync(
-                    message.Chat, 
-                    "Send Match result. Format @opponent yourScore:opponentScore");
-            else if (message.Text == "/show_rating")
-            {
-                var rating = await application.GetRating(message.Chat.Username);
-                await bot.SendTextMessageAsync(message.Chat, $"You rating is {rating}");
-            }
-            else
-                await bot.SendTextMessageAsync(message.Chat, "I dont know this command :(");
         }
     }
 }

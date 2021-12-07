@@ -20,8 +20,8 @@ namespace App.Dialogs
         }
 
         public abstract Task RunAsync(
-            IDialogGraph<TMessage> dialogGraph,
-            BufferBlock<TMessage> messageQueue, 
+            IBranchesManager<TMessage> branchesManager,
+            BufferBlock<TMessage> messageQueue,
             CancellationToken token);
     }
 }

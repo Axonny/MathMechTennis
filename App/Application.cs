@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using App.Rating;
 using MongoDB.Bson;
 using TableTennisDomain;
@@ -58,12 +60,26 @@ namespace App
             return playersRepository.TryGetPlayerIdByChatId(chatId, out var player);
         }
         
-        //TODO: delete
+        //TODO: rewrite. IRatingRecord?
         public async Task<long> GetRatingValue(string nickname)
         {
             var record = (await GetRating(nickname)) as EloRecord;
 
             return record.Rating;
+        }
+
+        public async Task<List<string>> GetLastMatchesInfos(string username, int count)
+        {
+            var matches = await Task.Run(() =>
+                matchesRepository.GetByPlayerId(playersRepository.GetPlayerIdByUsername(username), count));
+
+            var matchesInfos = matches
+                .Select(match => $"{match.Date}\n" +
+                                 $"{playersRepository.GetUsernameByPlayerId(match.FirstPlayerId)} vs " +
+                                 $"{playersRepository.GetUsernameByPlayerId(match.SecondPlayerId)}\n" +
+                                 $"Result: {match.GamesWonByFirstPlayer}:{match.GamesWonBySecondPlayer}");
+
+            return matchesInfos.ToList();
         }
 
         public Task<TRatingRecord> GetRating(string username)

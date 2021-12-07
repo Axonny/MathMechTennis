@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using TableTennisDomain.Infrastructure;
@@ -10,6 +11,11 @@ namespace App
         public PlayersRepository() 
             : base("Players")
         { }
+
+        public string GetUsernameByPlayerId(ObjectId id)
+        {
+            return Collection.Find(p => p.Id == id).First().Nickname;
+        }
 
         public ObjectId GetPlayerIdByUsername(string nickname)
         {

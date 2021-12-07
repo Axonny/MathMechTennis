@@ -7,7 +7,7 @@ namespace App
     {
         private readonly Message message;
 
-        public string SenderUsername => message.Chat.Username;
+        public string Username => message.Chat.Username;
         public long ChatId => message.Chat.Id;
         public string Text => message.Text;
 

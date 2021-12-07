@@ -23,7 +23,7 @@ namespace App.Dialogs.ChatDialog
                 .ToArray();
         }
 
-        public static ChatDialogGraph Build(
+        public static ChatBranchesManager Build(
             IUi ui, 
             IApplication application, 
             string startBranch)
@@ -38,7 +38,7 @@ namespace App.Dialogs.ChatDialog
                 branchByCommand[attribute.CommandName] = branch;
             }
 
-            return new ChatDialogGraph(ui, startBranch, branchByName, branchByCommand);
+            return new ChatBranchesManager(ui, startBranch, branchByName, branchByCommand);
         }
     }
 }

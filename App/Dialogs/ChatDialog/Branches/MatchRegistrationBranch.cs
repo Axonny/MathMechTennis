@@ -17,7 +17,7 @@ namespace App.Dialogs.ChatDialog.Branches
         }
 
         public override async Task RunAsync(
-            IDialogGraph<IChatMessage> graph,
+            IBranchesManager<IChatMessage> graph,
             BufferBlock<IChatMessage> messageQueue,
             CancellationToken token)
         {
@@ -28,7 +28,7 @@ namespace App.Dialogs.ChatDialog.Branches
             var message = await messageQueue.ReceiveAsync(token);
 
             var groups = matchResultRegex.Match(message.Text).Groups;
-            var player1 = message.SenderUsername;
+            var player1 = message.Username;
 
             if (groups[1].Value == "" || groups[2].Value == "" || groups[3].Value == "")
             {

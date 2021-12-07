@@ -13,7 +13,7 @@ namespace App.Dialogs.ChatDialog
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     [SuppressMessage("ReSharper", "StaticMemberInGenericType")]
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-    public class ChatDialogGraph: IDialogGraph<IChatMessage>
+    public class ChatBranchesManager: IBranchesManager<IChatMessage>
     {
         private static readonly Regex CommandRegex = new(@"^/\w+");
         
@@ -25,7 +25,7 @@ namespace App.Dialogs.ChatDialog
         public DialogBranch<IChatMessage> CurrentBranch { get; private set; }
         public IUi Ui { get; }
 
-        public ChatDialogGraph(
+        public ChatBranchesManager(
             IUi ui,
             string startBranchName,
             Dictionary<string, DialogBranch<IChatMessage>> branchByName,
@@ -64,7 +64,7 @@ namespace App.Dialogs.ChatDialog
             }
 
             if (CurrentBranch is null)
-                return;
+                throw new InvalidOperationException("No current branch");
 
             messageQueue.Post(message);
         }
