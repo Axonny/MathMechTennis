@@ -76,7 +76,9 @@ namespace App.Dialogs.ChatDialog
 
         public async Task ShowHelp()
         {
-            var text = string.Join("\n", branchByCommand.Keys.Where(key => key != "" && key != "/start"));
+            var text = string.Join(
+                "\n", 
+                branchByCommand.Keys.Where(key => key.Contains("/") && key != "/start"));
             
             await Ui.ShowMessage(text + "\n/help");
         }
