@@ -64,7 +64,7 @@ namespace App
                         return;
                     }
                     
-                    manager = ChatDialogGraphBuilder.Build(
+                    manager = ChatBranchesManagerBuilder.Build(
                         new TelegramChatUi(bot, message.Chat.Id), 
                         application, 
                         application.IsRegisteredPlayer(message.Chat.Id) ? "Default" : "Start");

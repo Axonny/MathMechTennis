@@ -4,11 +4,11 @@ using System.Reflection;
 
 namespace App.Dialogs.ChatDialog
 {
-    public static class ChatDialogGraphBuilder
+    public static class ChatBranchesManagerBuilder
     {
         private static readonly (ConstructorInfo branchType, ChatBranchAttribute attribute)[] branchesInfos;
 
-        static ChatDialogGraphBuilder()
+        static ChatBranchesManagerBuilder()
         {
             var branchesTypes = Assembly
                 .GetCallingAssembly()
