@@ -10,11 +10,11 @@ namespace TableTennisDomain.Infrastructure
 
         protected MongoDbRepository(string collectionName)
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["MongoDbServer"].ConnectionString;
-            var databaseName = ConfigurationManager.ConnectionStrings["MongoDbDatabase"].ConnectionString;
-            var client = new MongoClient(connectionString);
-            var database = client.GetDatabase(databaseName);
-            Collection = database.GetCollection<TItem>(collectionName);
+            //var connectionString = ConfigurationManager.ConnectionStrings["MongoDbServer"].ConnectionString;
+            //var databaseName = ConfigurationManager.ConnectionStrings["MongoDbDatabase"].ConnectionString;
+            //var client = new MongoClient(connectionString);
+            //var database = client.GetDatabase(databaseName);
+            //Collection = database.GetCollection<TItem>(collectionName);
         }
 
         public TItem GetById(ObjectId id)
