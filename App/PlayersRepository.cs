@@ -14,13 +14,26 @@ namespace App
 
         public string GetUsernameByPlayerId(ObjectId id)
         {
-            return Collection.Find(p => p.Id == id).First().Nickname;
+            try
+            {
+                return Collection.Find(p => p.Id == id).First().Nickname;
+            }
+            catch (Exception exception)
+            {
+                throw new RepositoryException(exception);
+            }
         }
 
-        public ObjectId GetPlayerIdByUsername(string nickname)
+        public ObjectId GetPlayerIdByUsername(string username)
         {
-            var player = Collection.Find(p => p.Nickname == nickname).First();
-            return player.Id;
+            try
+            {
+                return Collection.Find(p => p.Nickname == username).First().Id;
+            }
+            catch (Exception exception)
+            {
+                throw new RepositoryException(exception);
+            }
         }
 
         public bool TryGetPlayerIdByChatId(long chatId, out Player player)

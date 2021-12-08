@@ -21,5 +21,15 @@ namespace TableTennisDomain.DomainRepositories
                 .Take(count)
                 .ToList();
         }
+
+        public List<Match> GetLastMatches(ObjectId playerId, int count)
+        {
+            return Collection
+                .Find(match => match.FirstPlayerId == playerId || match.SecondPlayerId == playerId)
+                .SortByDescending(match => match.Date)
+                .ToEnumerable()
+                .Take(count)
+                .ToList();
+        }
     }
 }

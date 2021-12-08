@@ -9,6 +9,6 @@ namespace App
         Task RegisterPlayer(string nickname, long chatId);
         bool IsRegisteredPlayer(long chatId);
         Task<long> GetRatingValue(string nickname);
-        Task<List<string>> GetLastMatchesInfos(string username, int count);
+        Task<List<string>> GetLastMatchesInfos(string nickname, int count);
     }
 }

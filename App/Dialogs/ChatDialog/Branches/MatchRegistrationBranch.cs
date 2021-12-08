@@ -1,7 +1,9 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using TableTennisDomain.Infrastructure;
 
 namespace App.Dialogs.ChatDialog.Branches
 {
@@ -17,14 +19,13 @@ namespace App.Dialogs.ChatDialog.Branches
         }
 
         public override async Task RunAsync(
-            IBranchesManager<IChatMessage> graph,
+            IBranchesManager<IChatMessage> manager,
             BufferBlock<IChatMessage> messageQueue,
             CancellationToken token)
         {
-            await Ui.ShowMessage("Send Match result. Format @opponent yourScore:opponentScore");
-            
             await messageQueue.ReceiveAsync(token); //first message is command
             
+            await Ui.ShowMessage("Send Match result. Format @opponent yourScore:opponentScore");
             var message = await messageQueue.ReceiveAsync(token);
 
             var groups = matchResultRegex.Match(message.Text).Groups;
@@ -32,19 +33,27 @@ namespace App.Dialogs.ChatDialog.Branches
 
             if (groups[1].Value == "" || groups[2].Value == "" || groups[3].Value == "")
             {
-                await Ui.ShowMessage("Wrong syntax");
-                graph.StartBranchByName("Default");
+                await Ui.ShowMessage("Wrong format");
+                manager.StartBranchByName("Default");
                 return;
             }
             
             var player2 = groups[1].Value;
             var gamesWon1 = int.Parse(groups[2].Value);
             var gamesWon2 = int.Parse(groups[3].Value);
+
+            try
+            {
+                await Application.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
+                await Ui.ShowMessage("Match registration is completed!");
+            }
+            catch (RepositoryException)
+            {
+                await Ui.ShowMessage("It's not possible to register match. " +
+                                     "Maybe your opponent is not registered.");
+            }
             
-            await Application.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
-            
-            await Ui.ShowMessage("Match registration is completed!");
-            graph.StartBranchByName("Default");
+            manager.StartBranchByName("Default");
         }
     }
 }

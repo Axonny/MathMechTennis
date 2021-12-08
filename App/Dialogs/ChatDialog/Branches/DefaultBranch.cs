@@ -14,7 +14,7 @@ namespace App.Dialogs.ChatDialog.Branches
         }
         
         public override async Task RunAsync(
-            IBranchesManager<IChatMessage> branchesManager, 
+            IBranchesManager<IChatMessage> manager, 
             BufferBlock<IChatMessage> messageQueue, 
             CancellationToken token)
         {

@@ -68,10 +68,10 @@ namespace App
             return record.Rating;
         }
 
-        public async Task<List<string>> GetLastMatchesInfos(string username, int count)
+        public async Task<List<string>> GetLastMatchesInfos(string nickname, int count)
         {
             var matches = await Task.Run(() =>
-                matchesRepository.GetByPlayerId(playersRepository.GetPlayerIdByUsername(username), count));
+                matchesRepository.GetLastMatches(playersRepository.GetPlayerIdByUsername(nickname), count));
 
             var matchesInfos = matches
                 .Select(match => $"{match.Date}\n" +

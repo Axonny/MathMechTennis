@@ -20,7 +20,7 @@ namespace App.Dialogs
         }
 
         public abstract Task RunAsync(
-            IBranchesManager<TMessage> branchesManager,
+            IBranchesManager<TMessage> manager,
             BufferBlock<TMessage> messageQueue,
             CancellationToken token);
     }

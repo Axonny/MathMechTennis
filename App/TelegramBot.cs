@@ -29,8 +29,8 @@ namespace App
                 new PlayersRepository(),
                 new EloRating());
 
-            BugReporter.OnReportSend += async exception => 
-                await HandleErrorAsync(bot, exception, CancellationToken.None); 
+            // BugReporter.OnReportSend += async exception => 
+            //     await HandleErrorAsync(bot, exception, CancellationToken.None); 
             
             BugReporter.OnReportSend += async exception => 
                 await Console.Out.WriteLineAsync(exception.ToString());

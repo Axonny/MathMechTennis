@@ -104,6 +104,7 @@ namespace App.Dialogs.ChatDialog
                     return;
 
                 BugReporter.SendReport(exception);
+                StartBranchByName("Default");
             }
         }
     }

@@ -14,14 +14,14 @@ namespace App.Dialogs.ChatDialog.Branches
         }
         
         public override async Task RunAsync(
-            IBranchesManager<IChatMessage> branchesManager, 
+            IBranchesManager<IChatMessage> manager, 
             BufferBlock<IChatMessage> messageQueue, 
             CancellationToken token)
         {
             var command = await messageQueue.ReceiveAsync(token);
 
             await Ui.ShowMessage($"You rating is {await Application.GetRatingValue(command.Username)}");
-            branchesManager.StartBranchByName("Default");
+            manager.StartBranchByName("Default");
         }
     }
 }

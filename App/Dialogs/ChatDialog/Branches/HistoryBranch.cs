@@ -17,7 +17,7 @@ namespace App.Dialogs.ChatDialog.Branches
         }
 
         public override async Task RunAsync(
-            IBranchesManager<IChatMessage> branchesManager, 
+            IBranchesManager<IChatMessage> manager, 
             BufferBlock<IChatMessage> messageQueue, 
             CancellationToken token)
         {
@@ -26,7 +26,7 @@ namespace App.Dialogs.ChatDialog.Branches
 
             var message = await messageQueue.ReceiveAsync(token);
             var matches = await Application.GetLastMatchesInfos(message.Username, int.Parse(message.Text));
-            const int ResponseLinesLimit = 3;
+            const int ResponseLinesLimit = 5;
 
             for (var i = 0; i < matches.Count; i += ResponseLinesLimit)
             {
@@ -45,7 +45,7 @@ namespace App.Dialogs.ChatDialog.Branches
                 await Ui.ShowMessage(string.Join("\n-----\n", tmpBuffer));
             }
 
-            branchesManager.StartBranchByName("Default");
+            manager.StartBranchByName("Default");
         }
     }
 }

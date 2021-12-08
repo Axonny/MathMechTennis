@@ -5,16 +5,16 @@ using System.Threading.Tasks.Dataflow;
 namespace App.Dialogs.ChatDialog.Branches
 {
     [ChatBranch("/start")]
-    public class StartBranch : DialogBranch<IChatMessage>
+    public class RegistrationBranch : DialogBranch<IChatMessage>
     {
         public override string Name => "Start";
         
-        public StartBranch(IUi ui, IApplication application) : base(ui, application)
+        public RegistrationBranch(IUi ui, IApplication application) : base(ui, application)
         {
         }
         
         public override async Task RunAsync(
-            IBranchesManager<IChatMessage> branchesManager, 
+            IBranchesManager<IChatMessage> manager, 
             BufferBlock<IChatMessage> messageQueue, 
             CancellationToken token)
         {
@@ -22,7 +22,7 @@ namespace App.Dialogs.ChatDialog.Branches
             await Application.RegisterPlayer(message.Username, message.ChatId);
             await Ui.ShowMessage("Registration is completed. Try /help");
             
-            branchesManager.StartBranchByName("Default");
+            manager.StartBranchByName("Default");
         }
     }
 }
