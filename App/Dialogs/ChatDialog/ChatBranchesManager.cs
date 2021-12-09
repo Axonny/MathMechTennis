@@ -80,6 +80,7 @@ namespace App.Dialogs.ChatDialog
                 "\n", 
                 branchByCommand.Keys.Where(key => key.Contains("/") && key != "/start"));
             
+            StartBranchByName("Default");
             await Ui.ShowMessage(text + "\n/help");
         }
 
