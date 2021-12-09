@@ -4,26 +4,26 @@ using System.Reflection;
 
 namespace App.Dialogs.ChatDialog
 {
-    public static class ChatBranchesManagerBuilder
+    public static class TelegramBranchManagerBuilder
     {
-        private static readonly (ConstructorInfo branchType, ChatBranchAttribute attribute)[] branchesInfos;
+        private static readonly (ConstructorInfo branchType, TelegramBranchAttribute attribute)[] branchesInfos;
 
-        static ChatBranchesManagerBuilder()
+        static TelegramBranchManagerBuilder()
         {
             var branchesTypes = Assembly
                 .GetCallingAssembly()
                 .GetTypes()
                 .Where(type => type.BaseType == typeof(DialogBranch<IChatMessage>))
-                .Where(type => type.GetCustomAttribute<ChatBranchAttribute>() is not null);
+                .Where(type => type.GetCustomAttribute<TelegramBranchAttribute>() is not null);
             
             branchesInfos = branchesTypes
                 .Select(type => (
                     type.GetConstructor(new[] {typeof(IUi), typeof(IApplication)}), 
-                    type.GetCustomAttribute<ChatBranchAttribute>()))
+                    type.GetCustomAttribute<TelegramBranchAttribute>()))
                 .ToArray();
         }
 
-        public static ChatBranchesManager Build(
+        public static TelegramBranchManager Build(
             IUi ui, 
             IApplication application, 
             string startBranch)
@@ -38,7 +38,7 @@ namespace App.Dialogs.ChatDialog
                 branchByCommand[attribute.CommandName] = branch;
             }
 
-            return new ChatBranchesManager(ui, startBranch, branchByName, branchByCommand);
+            return new TelegramBranchManager(ui, startBranch, branchByName, branchByCommand);
         }
     }
 }

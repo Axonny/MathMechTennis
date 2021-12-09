@@ -11,9 +11,7 @@ namespace App.Dialogs.ChatDialog
 {
     [SuppressMessage("ReSharper", "CommentTypo")]
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-    [SuppressMessage("ReSharper", "StaticMemberInGenericType")]
-    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-    public class ChatBranchesManager: IBranchesManager<IChatMessage>
+    public class TelegramBranchManager: IBranchesManager<IChatMessage>
     {
         private static readonly Regex CommandRegex = new(@"^/\w+");
         
@@ -25,7 +23,7 @@ namespace App.Dialogs.ChatDialog
         public DialogBranch<IChatMessage> CurrentBranch { get; private set; }
         public IUi Ui { get; }
 
-        public ChatBranchesManager(
+        public TelegramBranchManager(
             IUi ui,
             string startBranchName,
             Dictionary<string, DialogBranch<IChatMessage>> branchByName,

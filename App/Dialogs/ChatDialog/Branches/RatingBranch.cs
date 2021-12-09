@@ -4,7 +4,7 @@ using System.Threading.Tasks.Dataflow;
 
 namespace App.Dialogs.ChatDialog.Branches
 {
-    [ChatBranch("/show_rating")]
+    [TelegramBranch("/show_rating")]
     public class RatingBranch : DialogBranch<IChatMessage>
     {
         public override string Name => "Rating";

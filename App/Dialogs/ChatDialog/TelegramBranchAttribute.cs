@@ -2,11 +2,11 @@
 
 namespace App.Dialogs.ChatDialog
 {
-    public class ChatBranchAttribute : Attribute
+    public class TelegramBranchAttribute : Attribute
     {
         public string CommandName { get; }
 
-        public ChatBranchAttribute(string commandName)
+        public TelegramBranchAttribute(string commandName)
         {
             CommandName = commandName;
         }

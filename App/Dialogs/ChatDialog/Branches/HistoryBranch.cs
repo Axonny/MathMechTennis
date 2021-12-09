@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace App.Dialogs.ChatDialog.Branches
 {
-    [ChatBranch("/history")]
+    [TelegramBranch("/history")]
     public class HistoryBranch : DialogBranch<IChatMessage>
     {
         public override string Name => "History";

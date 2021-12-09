@@ -18,7 +18,7 @@ namespace App
     {
         private static long BugReportChannelId => -1001610224482;
         private readonly Application<EloRecord> application;
-        private readonly Dictionary<long, ChatBranchesManager> dialogByChatId = new();
+        private readonly Dictionary<long, TelegramBranchManager> dialogByChatId = new();
 
         public TelegramBot(string token)
         {
@@ -64,7 +64,7 @@ namespace App
                         return;
                     }
                     
-                    manager = ChatBranchesManagerBuilder.Build(
+                    manager = TelegramBranchManagerBuilder.Build(
                         new TelegramChatUi(bot, message.Chat.Id), 
                         application, 
                         application.IsRegisteredPlayer(message.Chat.Id) ? "Default" : "Start");

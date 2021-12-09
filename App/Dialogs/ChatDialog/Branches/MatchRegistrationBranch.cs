@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -7,7 +6,7 @@ using TableTennisDomain.Infrastructure;
 
 namespace App.Dialogs.ChatDialog.Branches
 {
-    [ChatBranch("/set_result")]
+    [TelegramBranch("/set_result")]
     public class MatchRegistrationBranch : DialogBranch<IChatMessage>
     {
         private static readonly Regex matchResultRegex = new(@"@(\w+) (\d+)[:;., ](\d+)");

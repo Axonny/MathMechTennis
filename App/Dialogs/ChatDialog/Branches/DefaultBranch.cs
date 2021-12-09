@@ -4,7 +4,7 @@ using System.Threading.Tasks.Dataflow;
 
 namespace App.Dialogs.ChatDialog.Branches
 {
-    [ChatBranch("")]
+    [TelegramBranch("")]
     public class DefaultBranch : DialogBranch<IChatMessage>
     {
         public override string Name => "Default";
