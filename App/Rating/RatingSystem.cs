@@ -23,6 +23,6 @@ namespace App.Rating
         }
 
         public abstract void RegisterNewPlayer(ObjectId id);
-        protected abstract void Calculate(TRecord player1Record, TRecord player2Record, bool isFirstWinner);
+        public abstract void Calculate(TRecord player1Record, TRecord player2Record, bool isFirstWinner);
     }
 }

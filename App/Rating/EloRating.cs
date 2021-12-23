@@ -17,7 +17,7 @@ namespace App.Rating
             RatingByPlayerId.Save(new EloRecord(id, StartElo, 0));
         }
 
-        protected override void Calculate(EloRecord player1Record, EloRecord player2Record, bool isFirstWinner)
+        public override void Calculate(EloRecord player1Record, EloRecord player2Record, bool isFirstWinner)
         {
             var player1Score = 0;
             var player2Score = 0;
