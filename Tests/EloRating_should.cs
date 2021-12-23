@@ -10,7 +10,7 @@ namespace Tests
         [Test]
         public void SelectCorrectFactor()
         {
-            var rating = new EloRating();
+            var rating = new EloRating(null);
             var recordPlayer1 = new EloRecord(ObjectId.GenerateNewId(), 1000, 0);
             var recordPlayer2 = new EloRecord(ObjectId.GenerateNewId(), 1000, 40);
             rating.Calculate(recordPlayer1, recordPlayer2, true);
@@ -26,7 +26,7 @@ namespace Tests
         [Test]
         public void MathCountChange()
         {
-            var rating = new EloRating();
+            var rating = new EloRating(null);
             var recordPlayer1 = new EloRecord(ObjectId.GenerateNewId(), 1000, 0);
             var recordPlayer2 = new EloRecord(ObjectId.GenerateNewId(), 1700, 40);
             rating.Calculate(recordPlayer1, recordPlayer2, false);
@@ -37,7 +37,7 @@ namespace Tests
         [Test]
         public void StrongAndWeakPlayerPlay()
         {
-            var rating = new EloRating();
+            var rating = new EloRating(null);
             var recordPlayer1 = new EloRecord(ObjectId.GenerateNewId(), 1500, 30);
             var recordPlayer2 = new EloRecord(ObjectId.GenerateNewId(), 1800, 40);
             var recordPlayer3 = new EloRecord(ObjectId.GenerateNewId(), 1500, 30);
