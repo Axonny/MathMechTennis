@@ -28,7 +28,7 @@ namespace App
                 new MatchesRepository(),
                 new MatchStatusRepository(),
                 new PlayersRepository(),
-                new EloRating());
+                new EloRating(new EloRatingRepository()));
 
             // BugReporter.OnReportSend += async exception => 
             //     await HandleErrorAsync(bot, exception, CancellationToken.None); 

@@ -1,13 +1,16 @@
 ﻿using System;
 using MongoDB.Bson;
+using TableTennisDomain.Infrastructure;
 
 namespace App.Rating
 {
     public class EloRating : RatingSystem<EloRecord>
     {
         private const int StartElo = 1000;
-        
-        public EloRating() : base(new EloRatingRepository()) { }
+
+        public EloRating(IRepository<ObjectId, EloRecord> ratingRepository) : base(ratingRepository)
+        {
+        }
 
         public override void RegisterNewPlayer(ObjectId id)
         {
