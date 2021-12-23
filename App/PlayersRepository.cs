@@ -24,7 +24,7 @@ namespace App
             }
         }
 
-        public ObjectId GetPlayerIdByUsername(string username)
+        public ObjectId GetPlayerIdByNickname(string username)
         {
             try
             {

@@ -24,24 +24,8 @@ namespace App.Dialogs.ChatDialog.Branches
 
             var message = await messageQueue.ReceiveAsync(token);
             var matches = await Application.GetLastMatchesInfos(message.Username, int.Parse(message.Text));
-            const int ResponseLinesLimit = 5;
 
-            for (var i = 0; i < matches.Count; i += ResponseLinesLimit)
-            {
-                if (i != 0 && i % ResponseLinesLimit == 0)
-                {
-                    await Ui.ShowMessage("Send something to continue");
-                    await messageQueue.ReceiveAsync(token);
-                }
-
-                var tmpBuffer = new List<string>();
-                for (var j = i; j < i + ResponseLinesLimit && j < matches.Count; j++)
-                {
-                    tmpBuffer.Add(matches[j]);
-                }
-
-                await Ui.ShowMessage(string.Join("\n-----\n", tmpBuffer));
-            }
+            await BranchHelpers.ShowInParts(Ui, matches, messageQueue, token);
 
             manager.StartBranchByName("Default");
         }

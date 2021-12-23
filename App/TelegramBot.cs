@@ -26,6 +26,7 @@ namespace App
             
             application = new Application<EloRecord>(
                 new MatchesRepository(),
+                new MatchStatusRepository(),
                 new PlayersRepository(),
                 new EloRating());
 
@@ -45,7 +46,7 @@ namespace App
         }
         
         private static async Task HandleErrorAsync(
-            ITelegramBotClient botClient, 
+            ITelegramBotClient botClient,
             Exception exception,
             CancellationToken _)
         {

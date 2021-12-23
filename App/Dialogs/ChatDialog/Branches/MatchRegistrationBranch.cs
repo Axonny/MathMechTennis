@@ -43,7 +43,9 @@ namespace App.Dialogs.ChatDialog.Branches
 
             try
             {
-                await Application.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
+                var matchId = await Application.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
+                await Application.ConfirmMatchBy(player1, matchId);
+                
                 await Ui.ShowMessage("Match registration is completed!");
             }
             catch (RepositoryException)

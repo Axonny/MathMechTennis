@@ -1,5 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Win32;
 using Telegram.Bot;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace App
 {
@@ -16,6 +19,9 @@ namespace App
         
         public async Task ShowMessage(string text)
         {
+            if (text is null || text == "")
+                return;
+
             await botClient.SendTextMessageAsync(chatId, text);
         }
     }

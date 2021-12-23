@@ -96,6 +96,7 @@ namespace App.Dialogs.ChatDialog
             try
             {
                 await CurrentBranch.RunAsync(this, messageQueue, currentBranchCancellationTokenSource.Token);
+                //TODO: StartBranch<Type>()
             }
             catch (Exception exception)
             {
