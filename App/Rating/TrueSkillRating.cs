@@ -1,12 +1,13 @@
 ﻿using System;
 using MongoDB.Bson;
 using TableTennisDomain.Infrastructure;
+using System.Web.UI.DataVisualization.Charting;
 
 namespace App.Rating
 {
     public class TrueSkillRating : RatingSystem<TrueSkillRecord>
     {
-        private double beta = 25 / 6;
+        private const double Beta = 25 / 6;
         public TrueSkillRating(IRepository<ObjectId, TrueSkillRecord> ratingRepository) : base(ratingRepository)
         {
         }
@@ -19,7 +20,7 @@ namespace App.Rating
         public override void Calculate(TrueSkillRecord player1Record, TrueSkillRecord player2Record, bool isFirstWinner)
         {
             var t = Math.Abs(player1Record.Mu - player2Record.Mu);
-            var c = Math.Sqrt(2 * beta * beta 
+            var c = Math.Sqrt(2 * Beta * Beta 
                               + player1Record.Sigma * player1Record.Sigma 
                               + player2Record.Sigma * player2Record.Sigma);
             var v = GetV(t / c);
@@ -44,7 +45,11 @@ namespace App.Rating
         
         private double GetV(double t)
         {
-            throw new NotImplementedException();
+            var chart1 = new Chart();
+            var cdf = chart1.DataManipulator.Statistics.NormalDistribution(t);
+            var degree = -(t * t / 2);
+            var pdf = 1 / Math.Sqrt(2 * Math.PI) * Math.Exp(degree);
+            return pdf / cdf;
         }
     }
 }
