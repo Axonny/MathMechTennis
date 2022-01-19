@@ -14,5 +14,6 @@ namespace App
         Task ConfirmMatchBy(string nickname, ObjectId matchId);
         Task<List<string>> GetMatchesInfos(IEnumerable<ObjectId> matchIds);
         Task<long> GetChatIdByNickname(string nickname); //TODO: delete
+        string GetMatchInfo(ObjectId matchId);
     }
 }

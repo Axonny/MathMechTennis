@@ -113,7 +113,12 @@ namespace App
 
         public Task<List<string>> GetMatchesInfos(IEnumerable<ObjectId> matchIds)
         {
-            return Task.Run(() => matchIds.Select(id => GetMatchInfo(matchesRepository.GetById(id))).ToList());
+            return Task.Run(() => matchIds.Select(GetMatchInfo).ToList());
+        }
+
+        public string GetMatchInfo(ObjectId matchId)
+        {
+            return GetMatchInfo(matchesRepository.GetById(matchId));
         }
 
         public async Task<long> GetChatIdByNickname(string nickname)

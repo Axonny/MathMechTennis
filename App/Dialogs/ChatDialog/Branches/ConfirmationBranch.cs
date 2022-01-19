@@ -22,13 +22,13 @@ namespace App.Dialogs.ChatDialog.Branches
             CancellationToken token)
         {
             var message = await messageQueue.ReceiveAsync(token);
-            var matchId = message.Text.Split(' ')[1];
-            
+            var matchId = ObjectId.Parse(message.Text.Split(' ')[1]);
+
             Console.WriteLine("matchId");
             
-            await Application.ConfirmMatchBy(message.Username, ObjectId.Parse(matchId));
+            await Application.ConfirmMatchBy(message.Username, matchId);
 
-            await Ui.ShowTextMessage($"Confirmed: {matchId}");
+            await Ui.ShowTextMessage($"CONFIRMED:\n{Application.GetMatchInfo(matchId)}");
         }
     }
 }
