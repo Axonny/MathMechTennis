@@ -4,7 +4,7 @@ using TableTennisDomain.Infrastructure;
 
 namespace App.Rating
 {
-    public abstract class RatingSystem<TRecord> where TRecord : IIdentifiable<ObjectId>
+    public abstract class RatingSystem<TRecord> where TRecord : IRatingRecord
     {
         public IRepository<ObjectId, TRecord> RatingByPlayerId { get; }
         

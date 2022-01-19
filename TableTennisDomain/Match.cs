@@ -29,9 +29,10 @@ namespace TableTennisDomain
             }
         }
 
-        public Match(ObjectId firstPlayerId, ObjectId secondPlayerId, int gamesWonByFirstPlayer,
+        public Match(ObjectId matchId, ObjectId firstPlayerId, ObjectId secondPlayerId, int gamesWonByFirstPlayer,
             int gamesWonBySecondPlayer, DateTime date = default)
         {
+            Id = matchId;
             FirstPlayerId = firstPlayerId;
             SecondPlayerId = secondPlayerId;
             GamesWonByFirstPlayer = gamesWonByFirstPlayer;

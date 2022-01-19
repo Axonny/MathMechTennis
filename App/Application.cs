@@ -5,12 +5,11 @@ using App.Rating;
 using MongoDB.Bson;
 using TableTennisDomain;
 using TableTennisDomain.DomainRepositories;
-using TableTennisDomain.Infrastructure;
 
 namespace App
 {
     public class Application<TRatingRecord> : IApplication
-        where TRatingRecord : IIdentifiable<ObjectId>
+        where TRatingRecord : class, IRatingRecord
     {
         public RatingSystem<TRatingRecord> RatingSystem { get; }
 
@@ -33,12 +32,12 @@ namespace App
         public async Task<ObjectId> RegisterMatch(string nickname1, string nickname2, int gamesWon1, int gamesWon2)
         {
             var match = new Match(
+                ObjectId.GenerateNewId(),
                 playersRepository.GetPlayerIdByNickname(nickname1), 
                 playersRepository.GetPlayerIdByNickname(nickname2), 
                 gamesWon1,
                 gamesWon2);
             
-            match.Id = ObjectId.GenerateNewId();
             var matchStatus = new MatchStatusRecord {Id = match.Id};
 
             await Task.Run(() =>
@@ -65,13 +64,12 @@ namespace App
 
         public bool IsRegisteredPlayer(long chatId)
         {
-            return playersRepository.TryGetPlayerIdByChatId(chatId, out var player);
+            return playersRepository.TryGetPlayerIdByChatId(chatId, out _);
         }
         
-        //TODO: rewrite. IRatingRecord?
         public async Task<long> GetRatingValue(string nickname)
         {
-            var record = (await GetRating(nickname)) as EloRecord;
+            var record = await GetRating(nickname);
 
             return record.Rating;
         }

@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using App.Dialogs.ChatDialog;
 using App.Rating;
-using TableTennisDomain.DomainRepositories;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
@@ -17,18 +16,19 @@ namespace App
     public class TelegramBot
     {
         private static long BugReportChannelId => -1001610224482;
-        private readonly Application<EloRecord> application;
+        private readonly Application<IRatingRecord> application;
         private readonly Dictionary<long, TelegramBranchManager> dialogByChatId = new();
 
-        public TelegramBot(string token)
+        public TelegramBot(string token, Application<IRatingRecord> application)
         {
             var bot = new TelegramBotClient(token);
-            
-            application = new Application<EloRecord>(
-                new MatchesRepository(),
-                new MatchStatusRepository(),
-                new PlayersRepository(),
-                new EloRating(new EloRatingRepository()));
+
+            this.application = application;
+                // new Application<EloRecord>(
+                // new MatchesRepository(),
+                // new MatchStatusRepository(),
+                // new PlayersRepository(),
+                // new EloRating(new EloRatingRepository()));
 
             // BugReporter.OnReportSend += async exception => 
             //     await HandleErrorAsync(bot, exception, CancellationToken.None); 

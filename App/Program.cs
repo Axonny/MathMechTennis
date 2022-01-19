@@ -1,4 +1,9 @@
 ﻿using System;
+using App.Rating;
+using MongoDB.Bson;
+using Ninject;
+using TableTennisDomain.DomainRepositories;
+using TableTennisDomain.Infrastructure;
 
 namespace App
 {
@@ -6,10 +11,31 @@ namespace App
     {
         private static void Main()
         {
-            var tgBot = new TelegramBot(Environment.GetEnvironmentVariable(
-                "TgBotToken", 
-                EnvironmentVariableTarget.User));
+            ConfigureContainer().Get<TelegramBot>();
             Console.ReadLine();
+        }
+
+        private static StandardKernel ConfigureContainer()
+        {
+            var container = new StandardKernel();
+            
+            container.Bind<string>()
+                .ToConstant(
+                    Environment.GetEnvironmentVariable("TgBotToken", EnvironmentVariableTarget.User) 
+                    ?? throw new InvalidOperationException("Can't find TgBotToken"))
+                .WhenInjectedInto<TelegramBot>();
+            container.Bind<IRatingRecord>().To<EloRecord>();
+            
+            container.Bind<MatchesRepository>().ToSelf();
+            container.Bind<MatchStatusRepository>().ToSelf();
+            container.Bind<PlayersRepository>().ToSelf();
+            container.Bind<Application<EloRecord>>().ToSelf();
+            
+            container.Bind<EloRating>().ToSelf();
+            container.Bind<RatingSystem<EloRecord>>().To<EloRating>().WhenInjectedInto<Application<EloRecord>>();
+            container.Bind<IRepository<ObjectId, IRatingRecord>>().To<MongoDbRepository<IRatingRecord>>();
+
+            return container;
         }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using MongoDB.Bson;
-using TableTennisDomain.Infrastructure;
 
 namespace App.Rating
 {
-    public class EloRecord : IIdentifiable<ObjectId>
+    public class EloRecord : IRatingRecord
     {
         public ObjectId Id { get; set; }
         public int Rating { get; set; }
