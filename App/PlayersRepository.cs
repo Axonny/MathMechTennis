@@ -6,6 +6,7 @@ using TableTennisDomain.Infrastructure;
 
 namespace App
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class PlayersRepository : MongoDbRepository<Player>
     {
         public PlayersRepository() 

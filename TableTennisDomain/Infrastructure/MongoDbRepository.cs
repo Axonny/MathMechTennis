@@ -4,7 +4,8 @@ using MongoDB.Driver;
 
 namespace TableTennisDomain.Infrastructure
 {
-    public abstract class MongoDbRepository<TItem> : IRepository<ObjectId, TItem> where TItem : IIdentifiable<ObjectId>
+    public abstract class MongoDbRepository<TItem> : IRepository<ObjectId, TItem> 
+        where TItem : IIdentifiable<ObjectId>
     {
         protected readonly IMongoCollection<TItem> Collection;
 
