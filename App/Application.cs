@@ -146,11 +146,11 @@ namespace App
             var matchStatus = matchStatusRepository.GetById(match.Id);
 
             return $"MatchId: {match.Id}\n" +
-                   $"{match.Date}\n" +
-                   $"{nickname1} vs " +
-                   $"{nickname2}\n" +
-                   $"Confirmation: {matchStatus.IsConfirmedByEachOne}\n" +
-                   $"Result: {match.GamesWonByFirstPlayer}:{match.GamesWonBySecondPlayer}";
+                   $"Date: <b>{match.Date}</b>\n" +
+                   $"Players: {nickname1} vs " +
+                   $"<b>{nickname2}</b>\n" +
+                   $"Confirmation: <b>{matchStatus.IsConfirmedByEachOne}</b>\n" +
+                   $"Result: <b>{match.GamesWonByFirstPlayer}:{match.GamesWonBySecondPlayer}</b>";
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace App
@@ -28,7 +29,10 @@ namespace App
             if (text is null || text == "")
                 return;
 
-            await botClient.SendTextMessageAsync(await application.GetChatIdByNickname(receiverNickname), text);
+            await botClient.SendTextMessageAsync(
+                await application.GetChatIdByNickname(receiverNickname), 
+                text,
+                ParseMode.Html);
         }
         
         public async Task ShowMessageWithButtonFor(
@@ -48,6 +52,7 @@ namespace App
             await botClient.SendTextMessageAsync(
                 await application.GetChatIdByNickname(receiverNickname), 
                 messageText, 
+                ParseMode.Html,
                 replyMarkup: inlineKeyboard);
         }
     }
