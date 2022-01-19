@@ -95,7 +95,6 @@ namespace App
             }
 
             var match = matchesRepository.GetById(matchId);
-            Console.WriteLine(nickname);
             var playerId = playersRepository.GetPlayerIdByNickname(nickname);
             
             if (match.FirstPlayerId == playerId)
@@ -139,7 +138,8 @@ namespace App
             var nickname2 = playersRepository.GetNicknameByPlayerId(match.SecondPlayerId);
             var matchStatus = matchStatusRepository.GetById(match.Id);
 
-            return $"{match.Date}\n" +
+            return $"MatchId: {match.Id}\n" +
+                   $"{match.Date}\n" +
                    $"{nickname1} vs " +
                    $"{nickname2}\n" +
                    $"Confirmation: {matchStatus.IsConfirmedByEachOne}\n" +

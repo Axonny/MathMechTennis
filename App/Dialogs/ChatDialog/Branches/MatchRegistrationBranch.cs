@@ -46,13 +46,11 @@ namespace App.Dialogs.ChatDialog.Branches
                 var matchId = await Application.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
                 await Application.ConfirmMatchBy(player1, matchId);
                 
-                //TODO: more information about match (date, score, ...)
-                Console.WriteLine(manager.GetCommandByBranchName("Confirm") + $" {matchId}");
                 await Ui.ShowMessageWithButtonFor(
-                    $"Confirmation Request from {player1}.\nMatchId: {matchId}",
+                    $"Confirmation Request from {player1}.\n{Application.GetMatchInfo(matchId)}",
                     "Confirm",
                     manager.GetCommandByBranchName("Confirm") + $" {matchId}",
-                    await Application.GetChatIdByNickname(player2));
+                    player2);
                 await Ui.ShowTextMessage($"Match registration is completed!\nMatchId: {matchId}");
             }
             catch (RepositoryException)

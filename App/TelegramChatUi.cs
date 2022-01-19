@@ -7,33 +7,35 @@ namespace App
     public class TelegramChatUi : IUi
     {
         private readonly ITelegramBotClient botClient;
-        private readonly long chatId;
+        private readonly IApplication application;
+        private readonly string nickname;
 
-        public TelegramChatUi(ITelegramBotClient botClient, long chatId)
+        public TelegramChatUi(ITelegramBotClient botClient, string nickname, IApplication application)
         {
             this.botClient = botClient;
-            this.chatId = chatId;
+            this.application = application;
+            this.nickname = nickname;
         }
         
         public async Task ShowTextMessage(string text)
         {
-            await ShowTextMessageFor(text, chatId);
+            await ShowTextMessageFor(text, nickname);
         }
 
-        public async Task ShowTextMessageFor(string text, long receiverChatId)
+        public async Task ShowTextMessageFor(string text, string receiverNickname)
         {
+            // ReSharper disable once MergeIntoLogicalPattern
             if (text is null || text == "")
                 return;
 
-            await botClient.SendTextMessageAsync(receiverChatId, text);
+            await botClient.SendTextMessageAsync(await application.GetChatIdByNickname(receiverNickname), text);
         }
         
-        //TODO: No chatId like argument. Use Nickname for all Ui.
         public async Task ShowMessageWithButtonFor(
             string messageText, 
             string buttonText, 
             string callbackData, 
-            long receiverChatId)
+            string receiverNickname)
         {
             var inlineKeyboard = new InlineKeyboardMarkup(new[]
             {
@@ -43,7 +45,10 @@ namespace App
                 }
             });
 
-            await botClient.SendTextMessageAsync(receiverChatId, messageText, replyMarkup: inlineKeyboard);
+            await botClient.SendTextMessageAsync(
+                await application.GetChatIdByNickname(receiverNickname), 
+                messageText, 
+                replyMarkup: inlineKeyboard);
         }
     }
 }

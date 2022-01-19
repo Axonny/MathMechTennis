@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -22,10 +21,19 @@ namespace App.Dialogs.ChatDialog.Branches
             CancellationToken token)
         {
             var message = await messageQueue.ReceiveAsync(token);
-            var matchId = ObjectId.Parse(message.Text.Split(' ')[1]);
+            // ReSharper disable once RedundantAssignment
+            var matchId = ObjectId.Empty;
 
-            Console.WriteLine("matchId");
-            
+            try
+            {
+                matchId = ObjectId.Parse(message.Text.Split(' ')[1]);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                await Ui.ShowTextMessage("No matchId. Must be: /confirm <matchId>");
+                return;
+            }
+
             await Application.ConfirmMatchBy(message.Username, matchId);
 
             await Ui.ShowTextMessage($"CONFIRMED:\n{Application.GetMatchInfo(matchId)}");

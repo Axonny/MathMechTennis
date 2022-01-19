@@ -5,12 +5,12 @@ namespace App
     public interface IUi
     {
         Task ShowTextMessage(string text);
-        Task ShowTextMessageFor(string text, long receiverChatId);
+        Task ShowTextMessageFor(string text, string receiverNickname);
         
         Task ShowMessageWithButtonFor(
             string messageText,
             string buttonText,
             string callbackData,
-            long receiverChatId);
+            string receiverNickname);
     }
 }

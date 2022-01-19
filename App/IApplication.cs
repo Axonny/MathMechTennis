@@ -13,7 +13,7 @@ namespace App
         Task<List<string>> GetLastMatchesInfos(string nickname, int count);
         Task ConfirmMatchBy(string nickname, ObjectId matchId);
         Task<List<string>> GetMatchesInfos(IEnumerable<ObjectId> matchIds);
-        Task<long> GetChatIdByNickname(string nickname); //TODO: delete
+        Task<long> GetChatIdByNickname(string nickname);
         string GetMatchInfo(ObjectId matchId);
     }
 }
