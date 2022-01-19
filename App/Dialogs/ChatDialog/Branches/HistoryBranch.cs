@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -11,31 +11,33 @@ namespace App.Dialogs.ChatDialog.Branches
         public HistoryBranch(IUi ui, IApplication application) : base(ui, application)
         {
         }
-
+        
         public override async Task RunAsync(
             IBranchesManager<IChatMessage> manager, 
             BufferBlock<IChatMessage> messageQueue, 
             CancellationToken token)
         {
-            await messageQueue.ReceiveAsync(token);
-            await Ui.ShowTextMessage("Enter number of matches");
-
             var message = await messageQueue.ReceiveAsync(token);
+            var player = message.Username;
+            var offset = 0;
             
-            var matchesNumber = 0;
             try
             {
-                matchesNumber = int.Parse(message.Text);
+                offset = int.Parse(message.Text.Split(' ')[1]);
             }
-            catch (FormatException)
+            catch
             {
-                await Ui.ShowTextMessage("Wrong format.");
-                return;
+                // ignored
             }
-            
-            var matches = await Application.GetLastMatchesInfos(message.Username, matchesNumber);
 
-            await BranchHelpers.ShowInParts(Ui, matches, messageQueue, token);
+            var matches = await Application.GetLastMatchesInfos(message.Username, offset + 6);
+            var showMatches = matches.Skip(offset).Take(5).ToList();
+            
+            if (showMatches.Count == 0)
+                await Ui.ShowTextMessage("You has no matches.");
+            else
+                await BranchHelpers.ShowInParts(Ui, showMatches, messageQueue, token,
+                    matches.Count == offset + 6 ? ("history", player, offset + 5) : default);
         }
     }
 }

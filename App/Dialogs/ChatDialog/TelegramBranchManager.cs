@@ -83,6 +83,7 @@ namespace App.Dialogs.ChatDialog
                 branchByCommand
                     .Where(pair => pair.Key.Contains("/") && pair.Key != "/start")
                     .Select(pair => infoByBranch[pair.Value])
+                    .Where(attr => !attr.Hidden)
                     .Select(info =>
                     {
                         var fullDescription = info.Description is null ? "" : "- " + info.Description; 

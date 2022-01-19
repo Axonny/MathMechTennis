@@ -39,6 +39,18 @@ namespace App.Dialogs.ChatDialog.Branches
             var gamesWon1 = int.Parse(groups[2].Value);
             var gamesWon2 = int.Parse(groups[3].Value);
 
+            if (player1 == player2)
+            {
+                await Ui.ShowTextMessage("You can't play with yourself");
+                return;
+            }
+
+            if (gamesWon1 == gamesWon2)
+            {
+                await Ui.ShowTextMessage("Draw is not allowed");
+                return;
+            }
+
             try
             {
                 var matchId = await Application.RegisterMatch(player1, player2, gamesWon1, gamesWon2);

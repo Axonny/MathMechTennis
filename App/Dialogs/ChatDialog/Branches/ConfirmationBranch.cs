@@ -6,7 +6,7 @@ using MongoDB.Bson;
 
 namespace App.Dialogs.ChatDialog.Branches
 {
-    [TelegramBranch("/confirm", "confirm match by matchId")]
+    [TelegramBranch("/confirm", "confirm match by matchId", true)]
     public class ConfirmationBranch : DialogBranch<IChatMessage>
     {
         public ConfirmationBranch(IUi ui, IApplication application) : base(ui, application)

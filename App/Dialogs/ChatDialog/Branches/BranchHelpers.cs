@@ -12,6 +12,7 @@ namespace App.Dialogs.ChatDialog.Branches
             List<string> textParts,
             BufferBlock<IChatMessage> messageQueue,
             CancellationToken token,
+            (string command, string username, int count) callback = default,
             string separator = "\n-----\n",
             int partsInMessageLimit = 5)
         {
@@ -29,7 +30,18 @@ namespace App.Dialogs.ChatDialog.Branches
                     tmpBuffer.Add(textParts[j]);
                 }
 
-                await ui.ShowTextMessage(string.Join(separator, tmpBuffer));
+                if (!string.IsNullOrEmpty(callback.command))
+                {
+                    await ui.ShowMessageWithButtonFor(
+                        string.Join(separator, tmpBuffer), 
+                        "Continue",
+                        $"/{callback.command} {callback.count}", 
+                        callback.username);
+                }
+                else
+                {
+                    await ui.ShowTextMessage(string.Join(separator, tmpBuffer));
+                }
             }
         }
     }

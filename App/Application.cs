@@ -52,20 +52,32 @@ namespace App
 
         public Task RegisterPlayer(string nickname, long chatId)
         {
-            if (playersRepository.TryGetPlayerIdByChatId(chatId, out var _))
+            if (IsRegisteredPlayer(chatId))
                 return Task.CompletedTask;
-            
+
             return Task.Run(() =>
             {
-                var player = new Player(nickname, chatId);
-                playersRepository.Save(player);
+                if (!playersRepository.TryGetPlayerIdByChatId(chatId, out var player))
+                {
+                    player = new Player(nickname, chatId);
+                    playersRepository.Save(player);
+                }
                 RatingSystem.RegisterNewPlayer(player.Id);
             });
         }
 
         public bool IsRegisteredPlayer(long chatId)
         {
-            return playersRepository.TryGetPlayerIdByChatId(chatId, out _);
+            if (!playersRepository.TryGetPlayerIdByChatId(chatId, out var player)) return false;
+            try
+            {
+                RatingSystem.RatingByPlayerId.GetById(player.Id);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
         
         public async Task<long> GetRatingValue(string nickname)

@@ -13,7 +13,7 @@ namespace App.Rating
         public int Rating
         {
             get => (int)Math.Round(Mu - 3 * Sigma);
-            set => throw new NotImplementedException();
+            set { }
         }
 
         public TrueSkillRecord(ObjectId id, double mu, double sigma)
