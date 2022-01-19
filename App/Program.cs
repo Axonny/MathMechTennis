@@ -11,7 +11,7 @@ namespace App
     {
         private static void Main()
         {
-            ConfigureContainer().Get<TelegramBot>();
+            ConfigureContainer().Get <TelegramBot<EloRecord>>();
             Console.ReadLine();
         }
 
@@ -21,18 +21,17 @@ namespace App
             
             container.Bind<string>()
                 .ToConstant(
-                    Environment.GetEnvironmentVariable("TgBotToken", EnvironmentVariableTarget.User) 
-                    ?? throw new InvalidOperationException("Can't find TgBotToken"))
-                .WhenInjectedInto<TelegramBot>();
+                    @"2135115038:AAGcArPVCMvLlVxf4X4sxyZk7_5noYVGePI")
+                .WhenInjectedInto<TelegramBot<EloRecord>>();
             container.Bind<IRatingRecord>().To<EloRecord>();
             
             container.Bind<MatchesRepository>().ToSelf();
             container.Bind<MatchStatusRepository>().ToSelf();
             container.Bind<PlayersRepository>().ToSelf();
-            container.Bind<Application<EloRecord>>().ToSelf();
             
             container.Bind<EloRating>().ToSelf();
             container.Bind<RatingSystem<EloRecord>>().To<EloRating>().WhenInjectedInto<Application<EloRecord>>();
+            container.Bind<IRepository<ObjectId, EloRecord>>().To<EloRatingRepository>();
             container.Bind<IRepository<ObjectId, IRatingRecord>>().To<MongoDbRepository<IRatingRecord>>();
 
             return container;

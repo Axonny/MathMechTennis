@@ -13,13 +13,13 @@ namespace App
 {
     [SuppressMessage("ReSharper", "MethodSupportsCancellation")]
     [SuppressMessage("ReSharper", "CA2016")]
-    public class TelegramBot
+    public class TelegramBot<TRatingRecord> where TRatingRecord : class, IRatingRecord
     {
         private static long BugReportChannelId => -1001610224482;
-        private readonly Application<IRatingRecord> application;
+        private readonly Application<TRatingRecord> application;
         private readonly Dictionary<long, TelegramBranchManager> dialogByChatId = new();
 
-        public TelegramBot(string token, Application<IRatingRecord> application)
+        public TelegramBot(string token, Application<TRatingRecord> application)
         {
             var bot = new TelegramBotClient(token);
 
