@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
@@ -26,8 +25,6 @@ namespace App.Dialogs.ChatDialog.Branches
             var matches = await Application.GetLastMatchesInfos(message.Username, int.Parse(message.Text));
 
             await BranchHelpers.ShowInParts(Ui, matches, messageQueue, token);
-
-            manager.StartBranchByName("Default");
         }
     }
 }

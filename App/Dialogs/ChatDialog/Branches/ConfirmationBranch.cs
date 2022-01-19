@@ -27,7 +27,6 @@ namespace App.Dialogs.ChatDialog.Branches
             if (infos.Count == 0)
             {
                 await Ui.ShowMessage("No matches to confirm");
-                manager.StartBranchByName("Default");
                 return;
             }
             
@@ -49,8 +48,6 @@ namespace App.Dialogs.ChatDialog.Branches
             }
 
             await Ui.ShowMessage("Confirmed");
-
-            manager.StartBranchByName("Default");
         }
     }
 }

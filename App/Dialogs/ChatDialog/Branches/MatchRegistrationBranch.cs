@@ -33,7 +33,6 @@ namespace App.Dialogs.ChatDialog.Branches
             if (groups[1].Value == "" || groups[2].Value == "" || groups[3].Value == "")
             {
                 await Ui.ShowMessage("Wrong format");
-                manager.StartBranchByName("Default");
                 return;
             }
             
@@ -53,8 +52,6 @@ namespace App.Dialogs.ChatDialog.Branches
                 await Ui.ShowMessage("It's not possible to register match. " +
                                      "Maybe your opponent is not registered.");
             }
-            
-            manager.StartBranchByName("Default");
         }
     }
 }
