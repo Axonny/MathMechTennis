@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using App.Dialogs.ChatDialog.Branches;
 
 namespace App.Dialogs.ChatDialog
 {
@@ -15,7 +16,8 @@ namespace App.Dialogs.ChatDialog
     {
         private static readonly Regex CommandRegex = new(@"^/\w+");
         
-        private readonly Dictionary<string, DialogBranch<IChatMessage>> branchByName;
+        private readonly Dictionary<Type, DialogBranch<IChatMessage>> branchByType;
+        private readonly Dictionary<DialogBranch<IChatMessage>, TelegramBranchAttribute> infoByBranch;
         private readonly Dictionary<string, DialogBranch<IChatMessage>> branchByCommand;
         private BufferBlock<IChatMessage> messageQueue;
         private CancellationTokenSource currentBranchCancellationTokenSource = new();
@@ -25,18 +27,20 @@ namespace App.Dialogs.ChatDialog
 
         public TelegramBranchManager(
             IUi ui,
-            string startBranchName,
-            Dictionary<string, DialogBranch<IChatMessage>> branchByName,
+            Type startBranchType,
+            Dictionary<Type, DialogBranch<IChatMessage>> branchByType,
+            Dictionary<DialogBranch<IChatMessage>, TelegramBranchAttribute> infoByBranch,
             Dictionary<string, DialogBranch<IChatMessage>> branchByCommand)
         {
             Ui = ui;
-            this.branchByName = branchByName;
+            this.branchByType = branchByType;
+            this.infoByBranch = infoByBranch;
             this.branchByCommand = branchByCommand;
             
-            if (startBranchName is null) 
+            if (startBranchType is null) 
                 return;
             
-            CurrentBranch = this.branchByName[startBranchName];
+            CurrentBranch = this.branchByType[startBranchType];
             StartBranch(CurrentBranch);
         }
 
@@ -66,25 +70,35 @@ namespace App.Dialogs.ChatDialog
 
             messageQueue.Post(message);
         }
- 
-        public void StartBranchByName(string name, bool isNeedToCancelPrevBranch = true)
+
+        public void StartBranch<TBranch>(bool isNeedToCancelPrevBranch = true)
         {
-            StartBranch(branchByName[name], isNeedToCancelPrevBranch);
+            StartBranch(branchByType[typeof(TBranch)], isNeedToCancelPrevBranch);
         }
 
         public async Task ShowHelp()
         {
             var text = string.Join(
                 "\n", 
-                branchByCommand.Keys.Where(key => key.Contains("/") && key != "/start"));
+                branchByCommand
+                    .Where(pair => pair.Key.Contains("/") && pair.Key != "/start")
+                    .Select(pair => infoByBranch[pair.Value])
+                    .Select(info =>
+                    {
+                        var fullDescription = info.Description is null ? "" : "- " + info.Description; 
+                        
+                        return $"{info.CommandName} {fullDescription}";
+                    }));
             
-            StartBranchByName("Default");
+            StartBranch<DefaultBranch>();
             await Ui.ShowTextMessage(text + "\n/help");
         }
 
-        public string GetCommandByBranchName(string name)
+        public string GetCommandByBranch<TBranch>()
         {
-            return branchByCommand.First(pair => ReferenceEquals(pair.Value, branchByName[name])).Key;
+            return branchByCommand
+                .First(pair => ReferenceEquals(pair.Value, branchByType[typeof(TBranch)]))
+                .Key;
         }
 
         private async void StartBranch(
@@ -101,7 +115,6 @@ namespace App.Dialogs.ChatDialog
             try
             {
                 await CurrentBranch.RunAsync(this, messageQueue, currentBranchCancellationTokenSource.Token);
-                //TODO: StartBranch<Type>()
             }
             catch (Exception exception)
             {
@@ -111,7 +124,7 @@ namespace App.Dialogs.ChatDialog
                 BugReporter.SendReport(exception);
             }
             
-            StartBranchByName("Default");
+            StartBranch<DefaultBranch>();
         }
     }
 }

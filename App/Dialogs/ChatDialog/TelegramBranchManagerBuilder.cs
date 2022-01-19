@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -26,19 +27,21 @@ namespace App.Dialogs.ChatDialog
         public static TelegramBranchManager Build(
             IUi ui, 
             IApplication application, 
-            string startBranch)
+            Type startBranch)
         {
-            var branchByName = new Dictionary<string, DialogBranch<IChatMessage>>();
+            var branchByType = new Dictionary<Type, DialogBranch<IChatMessage>>();
+            var infoByBranch = new Dictionary<DialogBranch<IChatMessage>, TelegramBranchAttribute>();
             var branchByCommand = new Dictionary<string, DialogBranch<IChatMessage>>();
 
             foreach (var (constructor, attribute) in branchesInfos)
             {
                 var branch = (DialogBranch<IChatMessage>)constructor.Invoke(new object[] {ui, application});
-                branchByName[branch.Name] = branch;
+                branchByType[branch.GetType()] = branch;
+                infoByBranch[branch] = attribute;
                 branchByCommand[attribute.CommandName] = branch;
             }
 
-            return new TelegramBranchManager(ui, startBranch, branchByName, branchByCommand);
+            return new TelegramBranchManager(ui, startBranch, branchByType, infoByBranch, branchByCommand);
         }
     }
 }

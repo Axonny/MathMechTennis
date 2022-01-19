@@ -8,8 +8,6 @@ namespace App.Dialogs
     {
         protected readonly IUi Ui;
         protected readonly IApplication Application;
-        
-        public abstract string Name { get; }
 
         protected DialogBranch(
             IUi ui,

@@ -7,8 +7,6 @@ namespace App.Dialogs.ChatDialog.Branches
     [TelegramBranch("/start")]
     public class RegistrationBranch : DialogBranch<IChatMessage>
     {
-        public override string Name => "Start";
-        
         public RegistrationBranch(IUi ui, IApplication application) : base(ui, application)
         {
         }

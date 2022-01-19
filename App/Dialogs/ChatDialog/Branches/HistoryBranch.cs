@@ -5,11 +5,9 @@ using System.Threading.Tasks.Dataflow;
 
 namespace App.Dialogs.ChatDialog.Branches
 {
-    [TelegramBranch("/history")]
+    [TelegramBranch("/history", "show all my matches")]
     public class HistoryBranch : DialogBranch<IChatMessage>
     {
-        public override string Name => "History";
-        
         public HistoryBranch(IUi ui, IApplication application) : base(ui, application)
         {
         }

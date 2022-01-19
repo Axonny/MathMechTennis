@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using App.Dialogs.ChatDialog;
+using App.Dialogs.ChatDialog.Branches;
 using App.Rating;
 using TableTennisDomain.DomainRepositories;
 using Telegram.Bot;
@@ -29,7 +30,8 @@ namespace App
                 new MatchStatusRepository(),
                 new PlayersRepository(),
                 new EloRating(new EloRatingRepository()));
-
+            
+            //TODO: remove underlying comment in release version
             // BugReporter.OnReportSend += async exception => 
             //     await HandleErrorAsync(bot, exception, CancellationToken.None); 
             
@@ -73,7 +75,7 @@ namespace App
                 manager = TelegramBranchManagerBuilder.Build(
                     new TelegramChatUi(bot, chatMessage.Username, application), 
                     application, 
-                    application.IsRegisteredPlayer(chatId) ? "Default" : "Start");
+                    application.IsRegisteredPlayer(chatId) ? typeof(DefaultBranch) : typeof(RegistrationBranch));
 
                 dialogByChatId[chatId] = manager;
                 await Task.Run(() => manager.HandleMessage(chatMessage));
@@ -84,7 +86,7 @@ namespace App
             }
         }
 
-        private IChatMessage ConvertToChatMessage(Update update)
+        private static IChatMessage ConvertToChatMessage(Update update)
         {
             if (update.Message is not null)
                 return new TelegramMessageAdapter(update.Message);

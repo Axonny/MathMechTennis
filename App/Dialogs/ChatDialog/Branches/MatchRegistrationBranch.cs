@@ -7,12 +7,10 @@ using TableTennisDomain.Infrastructure;
 
 namespace App.Dialogs.ChatDialog.Branches
 {
-    [TelegramBranch("/save_result")]
+    [TelegramBranch("/save_result", "save result of match")]
     public class MatchRegistrationBranch : DialogBranch<IChatMessage>
     {
         private static readonly Regex matchResultRegex = new(@"@(\w+) (\d+)[:;., ](\d+)");
-
-        public override string Name => "Match";
 
         public MatchRegistrationBranch(IUi ui, IApplication application) : base(ui, application)
         {
@@ -49,7 +47,7 @@ namespace App.Dialogs.ChatDialog.Branches
                 await Ui.ShowMessageWithButtonFor(
                     $"Confirmation Request from {player1}.\n{Application.GetMatchInfo(matchId)}",
                     "Confirm",
-                    manager.GetCommandByBranchName("Confirm") + $" {matchId}",
+                    manager.GetCommandByBranch<ConfirmationBranch>() + $" {matchId}",
                     player2);
                 await Ui.ShowTextMessage("Match was saved!\n" +
                                          $"Waiting a confirmation by {player2}\n" +
