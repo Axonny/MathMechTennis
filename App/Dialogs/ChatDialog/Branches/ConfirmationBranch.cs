@@ -34,9 +34,15 @@ namespace App.Dialogs.ChatDialog.Branches
                 return;
             }
 
-            await Application.ConfirmMatchBy(message.Username, matchId);
-
-            await Ui.ShowTextMessage($"CONFIRMED:\n{Application.GetMatchInfo(matchId)}");
+            if (await Application.TryConfirmMatchBy(message.Username, matchId))
+            {
+                await Ui.ShowTextMessage($"CONFIRMED:\n{Application.GetMatchInfo(matchId)}");
+            }
+            else
+            {
+                await Ui.ShowTextMessage("CAN'T CONFIRM (MAYBE IT'S ALREADY CONFIRMED):\n" +
+                                      $"{Application.GetMatchInfo(matchId)}");
+            } 
         }
     }
 }

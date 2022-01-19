@@ -11,7 +11,8 @@ namespace App
         bool IsRegisteredPlayer(long chatId);
         Task<long> GetRatingValue(string nickname);
         Task<List<string>> GetLastMatchesInfos(string nickname, int count);
-        Task ConfirmMatchBy(string nickname, ObjectId matchId);
+        Task<bool> IsConfirmed(ObjectId matchId);
+        Task<bool> TryConfirmMatchBy(string nickname, ObjectId matchId);
         Task<List<string>> GetMatchesInfos(IEnumerable<ObjectId> matchIds);
         Task<long> GetChatIdByNickname(string nickname);
         string GetMatchInfo(ObjectId matchId);

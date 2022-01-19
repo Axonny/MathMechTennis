@@ -85,13 +85,18 @@ namespace App
             return matches.Select(GetMatchInfo).ToList();
         }
 
-        public Task ConfirmMatchBy(string nickname, ObjectId matchId)
+        public Task<bool> IsConfirmed(ObjectId matchId)
+        {
+            return Task.FromResult(matchStatusRepository.GetById(matchId).IsConfirmedByEachOne);
+        }
+
+        public async Task<bool> TryConfirmMatchBy(string nickname, ObjectId matchId)
         {
             var matchStatus = matchStatusRepository.GetById(matchId);
 
             if (matchStatus.IsConfirmedByEachOne)
             {
-                return Task.CompletedTask;
+                return false;
             }
 
             var match = matchesRepository.GetById(matchId);
@@ -107,7 +112,9 @@ namespace App
                 RatingSystem.UpdateRating(match);
             }
             
-            return Task.Run(() => matchStatusRepository.Update(matchStatus));
+            await Task.Run(() => matchStatusRepository.Update(matchStatus));
+
+            return true;
         }
 
         public Task<List<string>> GetMatchesInfos(IEnumerable<ObjectId> matchIds)

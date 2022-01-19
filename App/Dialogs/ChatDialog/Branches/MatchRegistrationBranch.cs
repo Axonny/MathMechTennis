@@ -7,7 +7,7 @@ using TableTennisDomain.Infrastructure;
 
 namespace App.Dialogs.ChatDialog.Branches
 {
-    [TelegramBranch("/set_result")]
+    [TelegramBranch("/save_result")]
     public class MatchRegistrationBranch : DialogBranch<IChatMessage>
     {
         private static readonly Regex matchResultRegex = new(@"@(\w+) (\d+)[:;., ](\d+)");
@@ -44,19 +44,21 @@ namespace App.Dialogs.ChatDialog.Branches
             try
             {
                 var matchId = await Application.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
-                await Application.ConfirmMatchBy(player1, matchId);
+                await Application.TryConfirmMatchBy(player1, matchId);
                 
                 await Ui.ShowMessageWithButtonFor(
                     $"Confirmation Request from {player1}.\n{Application.GetMatchInfo(matchId)}",
                     "Confirm",
                     manager.GetCommandByBranchName("Confirm") + $" {matchId}",
                     player2);
-                await Ui.ShowTextMessage($"Match registration is completed!\nMatchId: {matchId}");
+                await Ui.ShowTextMessage("Match was saved!\n" +
+                                         $"Waiting a confirmation by {player2}\n" +
+                                         $"{Application.GetMatchInfo(matchId)}");
             }
             catch (RepositoryException)
             {
                 await Ui.ShowTextMessage("It's not possible to register match. " +
-                                     "Maybe your opponent is not registered.");
+                                         "Maybe your opponent is not registered.");
             }
         }
     }

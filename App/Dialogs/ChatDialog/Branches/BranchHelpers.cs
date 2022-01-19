@@ -12,7 +12,7 @@ namespace App.Dialogs.ChatDialog.Branches
             List<string> textParts,
             BufferBlock<IChatMessage> messageQueue,
             CancellationToken token,
-            string separator = "\n-----\n", 
+            string separator = "\n-----\n",
             int partsInMessageLimit = 5)
         {
             for (var i = 0; i < textParts.Count; i += partsInMessageLimit)

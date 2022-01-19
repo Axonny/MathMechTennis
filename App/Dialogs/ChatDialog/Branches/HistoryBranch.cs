@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
@@ -22,7 +23,19 @@ namespace App.Dialogs.ChatDialog.Branches
             await Ui.ShowTextMessage("Enter number of matches");
 
             var message = await messageQueue.ReceiveAsync(token);
-            var matches = await Application.GetLastMatchesInfos(message.Username, int.Parse(message.Text));
+            
+            var matchesNumber = 0;
+            try
+            {
+                matchesNumber = int.Parse(message.Text);
+            }
+            catch (FormatException)
+            {
+                await Ui.ShowTextMessage("Wrong format.");
+                return;
+            }
+            
+            var matches = await Application.GetLastMatchesInfos(message.Username, matchesNumber);
 
             await BranchHelpers.ShowInParts(Ui, matches, messageQueue, token);
         }
