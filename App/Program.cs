@@ -20,8 +20,9 @@ namespace App
             var container = new StandardKernel();
             
             container.Bind<string>()
-                .ToConstant(
-                    @"2135115038:AAGcArPVCMvLlVxf4X4sxyZk7_5noYVGePI")
+                .ToConstant(Environment.GetEnvironmentVariable(
+                    "TgBotToken", 
+                    EnvironmentVariableTarget.User) ?? throw new InvalidOperationException("TgBotToken not found"))
                 .WhenInjectedInto<TelegramBot<EloRecord>>();
             container.Bind<IRatingRecord>().To<EloRecord>();
             
