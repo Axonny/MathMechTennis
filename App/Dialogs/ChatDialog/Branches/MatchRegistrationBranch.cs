@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -24,7 +25,7 @@ namespace App.Dialogs.ChatDialog.Branches
         {
             await messageQueue.ReceiveAsync(token); //first message is command
             
-            await Ui.ShowMessage("Send Match result. Format @opponent yourScore:opponentScore");
+            await Ui.ShowTextMessage("Send Match result. Format @opponent yourScore:opponentScore");
             var message = await messageQueue.ReceiveAsync(token);
 
             var groups = matchResultRegex.Match(message.Text).Groups;
@@ -32,7 +33,7 @@ namespace App.Dialogs.ChatDialog.Branches
 
             if (groups[1].Value == "" || groups[2].Value == "" || groups[3].Value == "")
             {
-                await Ui.ShowMessage("Wrong format");
+                await Ui.ShowTextMessage("Wrong format");
                 return;
             }
             
@@ -45,11 +46,18 @@ namespace App.Dialogs.ChatDialog.Branches
                 var matchId = await Application.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
                 await Application.ConfirmMatchBy(player1, matchId);
                 
-                await Ui.ShowMessage("Match registration is completed!");
+                //TODO: more information about match (date, score, ...)
+                Console.WriteLine(manager.GetCommandByBranchName("Confirm") + $" {matchId}");
+                await Ui.ShowMessageWithButtonFor(
+                    $"Confirmation Request from {player1}.\nMatchId: {matchId}",
+                    "Confirm",
+                    manager.GetCommandByBranchName("Confirm") + $" {matchId}",
+                    await Application.GetChatIdByNickname(player2));
+                await Ui.ShowTextMessage($"Match registration is completed!\nMatchId: {matchId}");
             }
             catch (RepositoryException)
             {
-                await Ui.ShowMessage("It's not possible to register match. " +
+                await Ui.ShowTextMessage("It's not possible to register match. " +
                                      "Maybe your opponent is not registered.");
             }
         }

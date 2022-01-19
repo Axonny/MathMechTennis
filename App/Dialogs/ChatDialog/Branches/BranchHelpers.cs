@@ -19,7 +19,7 @@ namespace App.Dialogs.ChatDialog.Branches
             {
                 if (i != 0 && i % partsInMessageLimit == 0)
                 {
-                    await ui.ShowMessage("Send something to continue");
+                    await ui.ShowTextMessage("Send something to continue");
                     await messageQueue.ReceiveAsync(token);
                 }
 
@@ -29,7 +29,7 @@ namespace App.Dialogs.ChatDialog.Branches
                     tmpBuffer.Add(textParts[j]);
                 }
 
-                await ui.ShowMessage(string.Join(separator, tmpBuffer));
+                await ui.ShowTextMessage(string.Join(separator, tmpBuffer));
             }
         }
     }

@@ -55,29 +55,44 @@ namespace App
 
         private async Task HandleUpdateAsync(ITelegramBotClient bot, Update update, CancellationToken _)
         {
-            if (update.Message is { } message)
+            try
             {
-                try
-                {
-                    if (dialogByChatId.TryGetValue(message.Chat.Id, out var manager))
-                    {
-                        await Task.Run(() => manager.HandleMessage(new TelegramMessageAdapter(message)));
-                        return;
-                    }
-                    
-                    manager = TelegramBranchManagerBuilder.Build(
-                        new TelegramChatUi(bot, message.Chat.Id), 
-                        application, 
-                        application.IsRegisteredPlayer(message.Chat.Id) ? "Default" : "Start");
+                var chatIdNullable = update.Message?.Chat.Id ?? update.CallbackQuery?.Message?.Chat.Id;
+                if (!chatIdNullable.HasValue)
+                    return;
 
-                    dialogByChatId[message.Chat.Id] = manager;
-                    await Task.Run(() => manager.HandleMessage(new TelegramMessageAdapter(message)));
-                }
-                catch (Exception exception)
+                var chatId = chatIdNullable.Value;
+                var chatMessage = ConvertToChatMessage(update);
+                
+                if (dialogByChatId.TryGetValue(chatId, out var manager))
                 {
-                    BugReporter.SendReport(exception);
+                    await Task.Run(() => manager.HandleMessage(chatMessage));
+                    return;
                 }
+                    
+                manager = TelegramBranchManagerBuilder.Build(
+                    new TelegramChatUi(bot, chatId), 
+                    application, 
+                    application.IsRegisteredPlayer(chatId) ? "Default" : "Start");
+
+                dialogByChatId[chatId] = manager;
+                await Task.Run(() => manager.HandleMessage(chatMessage));
             }
+            catch (Exception exception)
+            {
+                BugReporter.SendReport(exception);
+            }
+        }
+
+        private IChatMessage ConvertToChatMessage(Update update)
+        {
+            if (update.Message is not null)
+                return new TelegramMessageAdapter(update.Message);
+            if (update.CallbackQuery is not null)
+                return new TelegramCallbackAdapter(update.CallbackQuery);
+
+            throw new ArgumentException("Not supported update type: " +
+                                        "can convert only text messages and callbacks");
         }
     }
 }

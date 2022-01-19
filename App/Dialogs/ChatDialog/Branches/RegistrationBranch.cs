@@ -20,7 +20,7 @@ namespace App.Dialogs.ChatDialog.Branches
         {
             var message = await messageQueue.ReceiveAsync(token);
             await Application.RegisterPlayer(message.Username, message.ChatId);
-            await Ui.ShowMessage("Registration is completed. Try /help");
+            await Ui.ShowTextMessage("Registration is completed. Try /help");
         }
     }
 }

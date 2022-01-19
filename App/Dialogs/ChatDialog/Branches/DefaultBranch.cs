@@ -21,7 +21,7 @@ namespace App.Dialogs.ChatDialog.Branches
             while (!token.IsCancellationRequested)
             {
                 await messageQueue.ReceiveAsync(token);
-                await Ui.ShowMessage("Try /help");
+                await Ui.ShowTextMessage("Try /help");
             }
         }
     }

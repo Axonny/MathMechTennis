@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using App.Rating;
@@ -86,16 +87,23 @@ namespace App
 
         public Task ConfirmMatchBy(string nickname, ObjectId matchId)
         {
-            var match = matchesRepository.GetById(matchId);
             var matchStatus = matchStatusRepository.GetById(matchId);
-            var playerId = playersRepository.GetPlayerIdByNickname(nickname);
 
+            if (matchStatus.IsConfirmedByEachOne)
+            {
+                return Task.CompletedTask;
+            }
+
+            var match = matchesRepository.GetById(matchId);
+            Console.WriteLine(nickname);
+            var playerId = playersRepository.GetPlayerIdByNickname(nickname);
+            
             if (match.FirstPlayerId == playerId)
                 matchStatus.IsConfirmedByFirst = true;
             else if (match.SecondPlayerId == playerId)
                 matchStatus.IsConfirmedBySecond = true;
 
-            if (matchStatus.IsConfirmedByFirst && matchStatus.IsConfirmedBySecond)
+            if (matchStatus.IsConfirmedByEachOne)
             {
                 RatingSystem.UpdateRating(match);
             }
@@ -108,23 +116,10 @@ namespace App
             return Task.Run(() => matchIds.Select(id => GetMatchInfo(matchesRepository.GetById(id))).ToList());
         }
 
-        public Task<List<ObjectId>> GetUnconfirmedMatchesIds(string nickname, int maxCount = 5)
+        public async Task<long> GetChatIdByNickname(string nickname)
         {
-            var playerId = playersRepository.GetPlayerIdByNickname(nickname);
-
-            return Task.Run(() =>
-                matchesRepository
-                    //TODO: GetByPlayerId without count (with IEnumerable)
-                    .GetByPlayerId(playerId, maxCount)
-                    .Where(match =>
-                    {
-                        var status = matchStatusRepository.GetById(match.Id);
-
-                        return match.FirstPlayerId == playerId && !status.IsConfirmedByFirst
-                               || match.SecondPlayerId == playerId && !status.IsConfirmedBySecond;
-                    })
-                    .Select(match => match.Id)
-                    .ToList());
+            return (await Task.Run(
+                () => playersRepository.GetById(playersRepository.GetPlayerIdByNickname(nickname)))).ChatId;
         }
 
         public Task<TRatingRecord> GetRating(string nickname)
@@ -135,9 +130,14 @@ namespace App
 
         private string GetMatchInfo(Match match)
         {
+            var nickname1 = playersRepository.GetNicknameByPlayerId(match.FirstPlayerId);
+            var nickname2 = playersRepository.GetNicknameByPlayerId(match.SecondPlayerId);
+            var matchStatus = matchStatusRepository.GetById(match.Id);
+
             return $"{match.Date}\n" +
-                   $"{playersRepository.GetUsernameByPlayerId(match.FirstPlayerId)} vs " +
-                   $"{playersRepository.GetUsernameByPlayerId(match.SecondPlayerId)}\n" +
+                   $"{nickname1} vs " +
+                   $"{nickname2}\n" +
+                   $"Confirmation: {matchStatus.IsConfirmedByEachOne}\n" +
                    $"Result: {match.GamesWonByFirstPlayer}:{match.GamesWonBySecondPlayer}";
         }
     }

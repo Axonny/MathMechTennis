@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Win32;
+﻿using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -17,12 +15,35 @@ namespace App
             this.chatId = chatId;
         }
         
-        public async Task ShowMessage(string text)
+        public async Task ShowTextMessage(string text)
+        {
+            await ShowTextMessageFor(text, chatId);
+        }
+
+        public async Task ShowTextMessageFor(string text, long receiverChatId)
         {
             if (text is null || text == "")
                 return;
 
-            await botClient.SendTextMessageAsync(chatId, text);
+            await botClient.SendTextMessageAsync(receiverChatId, text);
+        }
+        
+        //TODO: No chatId like argument. Use Nickname for all Ui.
+        public async Task ShowMessageWithButtonFor(
+            string messageText, 
+            string buttonText, 
+            string callbackData, 
+            long receiverChatId)
+        {
+            var inlineKeyboard = new InlineKeyboardMarkup(new[]
+            {
+                new []
+                {
+                    InlineKeyboardButton.WithCallbackData(buttonText, callbackData)
+                }
+            });
+
+            await botClient.SendTextMessageAsync(receiverChatId, messageText, replyMarkup: inlineKeyboard);
         }
     }
 }

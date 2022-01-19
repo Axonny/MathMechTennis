@@ -8,5 +8,6 @@ namespace App
         public ObjectId Id { get; set; } //MatchId == MatchStatusId
         public bool IsConfirmedByFirst { get; set; }
         public bool IsConfirmedBySecond { get; set; }
+        public bool IsConfirmedByEachOne => IsConfirmedByFirst && IsConfirmedBySecond;
     }
 }

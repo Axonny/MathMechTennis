@@ -8,5 +8,6 @@ namespace App.Dialogs
         DialogBranch<TMessage> CurrentBranch { get; }
         void HandleMessage(TMessage message);
         void StartBranchByName(string name, bool isNeedToCancelPrevBranch = true);
+        string GetCommandByBranchName(string name);
     }
 }

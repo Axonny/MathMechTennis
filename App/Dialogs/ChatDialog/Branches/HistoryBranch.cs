@@ -19,7 +19,7 @@ namespace App.Dialogs.ChatDialog.Branches
             CancellationToken token)
         {
             await messageQueue.ReceiveAsync(token);
-            await Ui.ShowMessage("Enter number of matches");
+            await Ui.ShowTextMessage("Enter number of matches");
 
             var message = await messageQueue.ReceiveAsync(token);
             var matches = await Application.GetLastMatchesInfos(message.Username, int.Parse(message.Text));

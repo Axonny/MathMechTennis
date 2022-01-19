@@ -42,20 +42,20 @@ namespace App.Dialogs.ChatDialog
 
         public async void HandleMessage(IChatMessage message)
         {
-            var text = message.Text;
-            if (text is not null && CommandRegex.IsMatch(text))
+            var command = message.Text?.Split(' ')[0];
+            if (command is not null && CommandRegex.IsMatch(command))
             {
-                if (text == "/help")
+                if (command == "/help")
                     await ShowHelp();
                 else
                 {
-                    if (branchByCommand.TryGetValue(text, out var branch))
+                    if (branchByCommand.TryGetValue(command, out var branch))
                     {
                         StartBranch(branch);
                         messageQueue.Post(message);
                     }
                     else
-                        await Ui.ShowMessage("Unknown command");
+                        await Ui.ShowTextMessage("Unknown command");
                 }
 
                 return;
@@ -79,7 +79,12 @@ namespace App.Dialogs.ChatDialog
                 branchByCommand.Keys.Where(key => key.Contains("/") && key != "/start"));
             
             StartBranchByName("Default");
-            await Ui.ShowMessage(text + "\n/help");
+            await Ui.ShowTextMessage(text + "\n/help");
+        }
+
+        public string GetCommandByBranchName(string name)
+        {
+            return branchByCommand.First(pair => ReferenceEquals(pair.Value, branchByName[name])).Key;
         }
 
         private async void StartBranch(
