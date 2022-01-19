@@ -7,8 +7,6 @@ namespace App.Dialogs.ChatDialog.Branches
     [TelegramBranch("/start")]
     public class RegistrationBranch : DialogBranch<IChatMessage>
     {
-        public override string Name => "Start";
-        
         public RegistrationBranch(IUi ui, IApplication application) : base(ui, application)
         {
         }
@@ -20,9 +18,7 @@ namespace App.Dialogs.ChatDialog.Branches
         {
             var message = await messageQueue.ReceiveAsync(token);
             await Application.RegisterPlayer(message.Username, message.ChatId);
-            await Ui.ShowMessage("Registration is completed. Try /help");
-            
-            manager.StartBranchByName("Default");
+            await Ui.ShowTextMessage("Registration is completed. Try /help");
         }
     }
 }

@@ -12,7 +12,7 @@ namespace App
             : base("Players")
         { }
 
-        public string GetUsernameByPlayerId(ObjectId id)
+        public string GetNicknameByPlayerId(ObjectId id)
         {
             try
             {

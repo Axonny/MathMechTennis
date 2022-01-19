@@ -1,15 +1,14 @@
-﻿using System.Linq;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using MongoDB.Bson;
 
 namespace App.Dialogs.ChatDialog.Branches
 {
-    [TelegramBranch("/confirm")]
+    [TelegramBranch("/confirm", "confirm match by matchId")]
     public class ConfirmationBranch : DialogBranch<IChatMessage>
     {
-        public override string Name => "Confirm";
-        
         public ConfirmationBranch(IUi ui, IApplication application) : base(ui, application)
         {
         }
@@ -19,38 +18,29 @@ namespace App.Dialogs.ChatDialog.Branches
             BufferBlock<IChatMessage> messageQueue, 
             CancellationToken token)
         {
-            var nickname = (await messageQueue.ReceiveAsync(token)).Username; 
+            var message = await messageQueue.ReceiveAsync(token);
+            // ReSharper disable once RedundantAssignment
+            var matchId = ObjectId.Empty;
 
-            var unconfirmedMatches = await Application.GetUnconfirmedMatchesIds(nickname);
-            var infos = await Application.GetMatchesInfos(unconfirmedMatches);
-
-            if (infos.Count == 0)
+            try
             {
-                await Ui.ShowMessage("No matches to confirm");
-                manager.StartBranchByName("Default");
+                matchId = ObjectId.Parse(message.Text.Split(' ')[1]);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                await Ui.ShowTextMessage("No matchId. Must be: /confirm <matchId>");
                 return;
             }
-            
-            for (var i = 0; i < infos.Count; i++)
-                infos[i] = $"{i + 1}. " + infos[i];
 
-            await Ui.ShowMessage(string.Join("\n-----\n", infos));
-
-            var message = await messageQueue.ReceiveAsync(token);
-
-            var matchIndexesToConfirm = message.Text
-                .Split(" ")
-                .Select(strIndex => int.TryParse(strIndex, out var result) ? result : int.MinValue)
-                .Where(index => index != int.MinValue);
-            
-            foreach (var index in matchIndexesToConfirm)
+            if (await Application.TryConfirmMatchBy(message.Username, matchId))
             {
-                await Application.ConfirmMatchBy(nickname, unconfirmedMatches[index - 1]);
+                await Ui.ShowTextMessage($"CONFIRMED:\n{Application.GetMatchInfo(matchId)}");
             }
-
-            await Ui.ShowMessage("Confirmed");
-
-            manager.StartBranchByName("Default");
+            else
+            {
+                await Ui.ShowTextMessage("CAN'T CONFIRM (MAYBE IT'S ALREADY CONFIRMED):\n" +
+                                      $"{Application.GetMatchInfo(matchId)}");
+            } 
         }
     }
 }

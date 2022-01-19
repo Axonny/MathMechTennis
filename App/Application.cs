@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using App.Rating;
@@ -82,47 +83,52 @@ namespace App
             return matches.Select(GetMatchInfo).ToList();
         }
 
-        public Task ConfirmMatchBy(string nickname, ObjectId matchId)
+        public Task<bool> IsConfirmed(ObjectId matchId)
         {
-            var match = matchesRepository.GetById(matchId);
-            var matchStatus = matchStatusRepository.GetById(matchId);
-            var playerId = playersRepository.GetPlayerIdByNickname(nickname);
+            return Task.FromResult(matchStatusRepository.GetById(matchId).IsConfirmedByEachOne);
+        }
 
+        public async Task<bool> TryConfirmMatchBy(string nickname, ObjectId matchId)
+        {
+            var matchStatus = matchStatusRepository.GetById(matchId);
+
+            if (matchStatus.IsConfirmedByEachOne)
+            {
+                return false;
+            }
+
+            var match = matchesRepository.GetById(matchId);
+            var playerId = playersRepository.GetPlayerIdByNickname(nickname);
+            
             if (match.FirstPlayerId == playerId)
                 matchStatus.IsConfirmedByFirst = true;
             else if (match.SecondPlayerId == playerId)
                 matchStatus.IsConfirmedBySecond = true;
 
-            if (matchStatus.IsConfirmedByFirst && matchStatus.IsConfirmedBySecond)
+            if (matchStatus.IsConfirmedByEachOne)
             {
                 RatingSystem.UpdateRating(match);
             }
             
-            return Task.Run(() => matchStatusRepository.Update(matchStatus));
+            await Task.Run(() => matchStatusRepository.Update(matchStatus));
+
+            return true;
         }
 
         public Task<List<string>> GetMatchesInfos(IEnumerable<ObjectId> matchIds)
         {
-            return Task.Run(() => matchIds.Select(id => GetMatchInfo(matchesRepository.GetById(id))).ToList());
+            return Task.Run(() => matchIds.Select(GetMatchInfo).ToList());
         }
 
-        public Task<List<ObjectId>> GetUnconfirmedMatchesIds(string nickname, int maxCount = 5)
+        public string GetMatchInfo(ObjectId matchId)
         {
-            var playerId = playersRepository.GetPlayerIdByNickname(nickname);
+            return GetMatchInfo(matchesRepository.GetById(matchId));
+        }
 
-            return Task.Run(() =>
-                matchesRepository
-                    //TODO: GetByPlayerId without count (with IEnumerable)
-                    .GetByPlayerId(playerId, maxCount)
-                    .Where(match =>
-                    {
-                        var status = matchStatusRepository.GetById(match.Id);
-
-                        return match.FirstPlayerId == playerId && !status.IsConfirmedByFirst
-                               || match.SecondPlayerId == playerId && !status.IsConfirmedBySecond;
-                    })
-                    .Select(match => match.Id)
-                    .ToList());
+        public async Task<long> GetChatIdByNickname(string nickname)
+        {
+            return (await Task.Run(
+                () => playersRepository.GetById(playersRepository.GetPlayerIdByNickname(nickname)))).ChatId;
         }
 
         public Task<TRatingRecord> GetRating(string nickname)
@@ -133,10 +139,16 @@ namespace App
 
         private string GetMatchInfo(Match match)
         {
-            return $"{match.Date}\n" +
-                   $"{playersRepository.GetUsernameByPlayerId(match.FirstPlayerId)} vs " +
-                   $"{playersRepository.GetUsernameByPlayerId(match.SecondPlayerId)}\n" +
-                   $"Result: {match.GamesWonByFirstPlayer}:{match.GamesWonBySecondPlayer}";
+            var nickname1 = playersRepository.GetNicknameByPlayerId(match.FirstPlayerId);
+            var nickname2 = playersRepository.GetNicknameByPlayerId(match.SecondPlayerId);
+            var matchStatus = matchStatusRepository.GetById(match.Id);
+
+            return $"MatchId: {match.Id}\n" +
+                   $"Date: <b>{match.Date}</b>\n" +
+                   $"Players: {nickname1} vs " +
+                   $"<b>{nickname2}</b>\n" +
+                   $"Confirmation: <b>{matchStatus.IsConfirmedByEachOne}</b>\n" +
+                   $"Result: <b>{match.GamesWonByFirstPlayer}:{match.GamesWonBySecondPlayer}</b>";
         }
     }
 }

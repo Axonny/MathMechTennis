@@ -7,8 +7,6 @@ namespace App.Dialogs.ChatDialog.Branches
     [TelegramBranch("")]
     public class DefaultBranch : DialogBranch<IChatMessage>
     {
-        public override string Name => "Default";
-        
         public DefaultBranch(IUi ui, IApplication application) : base(ui, application)
         {
         }
@@ -21,7 +19,7 @@ namespace App.Dialogs.ChatDialog.Branches
             while (!token.IsCancellationRequested)
             {
                 await messageQueue.ReceiveAsync(token);
-                await Ui.ShowMessage("Try /help");
+                await Ui.ShowTextMessage("Try /help");
             }
         }
     }

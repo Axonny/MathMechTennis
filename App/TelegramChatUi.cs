@@ -1,7 +1,6 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Win32;
+﻿using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace App
@@ -9,20 +8,52 @@ namespace App
     public class TelegramChatUi : IUi
     {
         private readonly ITelegramBotClient botClient;
-        private readonly long chatId;
+        private readonly IApplication application;
+        private readonly string nickname;
 
-        public TelegramChatUi(ITelegramBotClient botClient, long chatId)
+        public TelegramChatUi(ITelegramBotClient botClient, string nickname, IApplication application)
         {
             this.botClient = botClient;
-            this.chatId = chatId;
+            this.application = application;
+            this.nickname = nickname;
         }
         
-        public async Task ShowMessage(string text)
+        public async Task ShowTextMessage(string text)
         {
+            await ShowTextMessageFor(text, nickname);
+        }
+
+        public async Task ShowTextMessageFor(string text, string receiverNickname)
+        {
+            // ReSharper disable once MergeIntoLogicalPattern
             if (text is null || text == "")
                 return;
 
-            await botClient.SendTextMessageAsync(chatId, text);
+            await botClient.SendTextMessageAsync(
+                await application.GetChatIdByNickname(receiverNickname), 
+                text,
+                ParseMode.Html);
+        }
+        
+        public async Task ShowMessageWithButtonFor(
+            string messageText, 
+            string buttonText, 
+            string callbackData, 
+            string receiverNickname)
+        {
+            var inlineKeyboard = new InlineKeyboardMarkup(new[]
+            {
+                new []
+                {
+                    InlineKeyboardButton.WithCallbackData(buttonText, callbackData)
+                }
+            });
+
+            await botClient.SendTextMessageAsync(
+                await application.GetChatIdByNickname(receiverNickname), 
+                messageText, 
+                ParseMode.Html,
+                replyMarkup: inlineKeyboard);
         }
     }
 }

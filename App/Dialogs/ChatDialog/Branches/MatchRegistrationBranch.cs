@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -6,12 +7,10 @@ using TableTennisDomain.Infrastructure;
 
 namespace App.Dialogs.ChatDialog.Branches
 {
-    [TelegramBranch("/set_result")]
+    [TelegramBranch("/save_result", "save result of match")]
     public class MatchRegistrationBranch : DialogBranch<IChatMessage>
     {
         private static readonly Regex matchResultRegex = new(@"@(\w+) (\d+)[:;., ](\d+)");
-
-        public override string Name => "Match";
 
         public MatchRegistrationBranch(IUi ui, IApplication application) : base(ui, application)
         {
@@ -24,7 +23,7 @@ namespace App.Dialogs.ChatDialog.Branches
         {
             await messageQueue.ReceiveAsync(token); //first message is command
             
-            await Ui.ShowMessage("Send Match result. Format @opponent yourScore:opponentScore");
+            await Ui.ShowTextMessage("Send Match result. Format @opponent yourScore:opponentScore");
             var message = await messageQueue.ReceiveAsync(token);
 
             var groups = matchResultRegex.Match(message.Text).Groups;
@@ -32,8 +31,7 @@ namespace App.Dialogs.ChatDialog.Branches
 
             if (groups[1].Value == "" || groups[2].Value == "" || groups[3].Value == "")
             {
-                await Ui.ShowMessage("Wrong format");
-                manager.StartBranchByName("Default");
+                await Ui.ShowTextMessage("Wrong format");
                 return;
             }
             
@@ -44,17 +42,22 @@ namespace App.Dialogs.ChatDialog.Branches
             try
             {
                 var matchId = await Application.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
-                await Application.ConfirmMatchBy(player1, matchId);
+                await Application.TryConfirmMatchBy(player1, matchId);
                 
-                await Ui.ShowMessage("Match registration is completed!");
+                await Ui.ShowMessageWithButtonFor(
+                    $"Confirmation Request from {player1}.\n{Application.GetMatchInfo(matchId)}",
+                    "Confirm",
+                    manager.GetCommandByBranch<ConfirmationBranch>() + $" {matchId}",
+                    player2);
+                await Ui.ShowTextMessage("Match was saved!\n" +
+                                         $"Waiting a confirmation by {player2}\n" +
+                                         $"{Application.GetMatchInfo(matchId)}");
             }
             catch (RepositoryException)
             {
-                await Ui.ShowMessage("It's not possible to register match. " +
-                                     "Maybe your opponent is not registered.");
+                await Ui.ShowTextMessage("It's not possible to register match. " +
+                                         "Maybe your opponent is not registered.");
             }
-            
-            manager.StartBranchByName("Default");
         }
     }
 }
