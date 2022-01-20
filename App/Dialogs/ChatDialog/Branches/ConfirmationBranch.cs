@@ -38,8 +38,7 @@ namespace App.Dialogs.ChatDialog.Branches
             }
             else
             {
-                await Ui.ShowTextMessage("CAN'T CONFIRM (MAYBE IT'S ALREADY CONFIRMED):\n" +
-                                      $"{Application.GetMatchInfo(matchId)}");
+                await Ui.ShowTextMessage("CAN'T CONFIRM (MAYBE IT'S ALREADY CONFIRMED OR REJECTED)");
             } 
         }
     }

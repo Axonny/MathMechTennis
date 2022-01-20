@@ -32,14 +32,15 @@ namespace App.Dialogs.ChatDialog.Branches
                 return;
             }
 
-            if (await Application.TryRejectMatchBy(message.Username, matchId))
+            var (status, deleteMatch) = await Application.TryRejectMatchBy(message.Username, matchId);
+
+            if (status)
             {
-                await Ui.ShowTextMessage($"REJECTED");
+                await Ui.ShowTextMessage($"REJECTED:\n{Application.GetMatchInfo(deleteMatch)}");
             }
             else
             {
-                await Ui.ShowTextMessage("CAN'T REJECT (MAYBE IT'S ALREADY CONFIRMED):\n" +
-                                         $"{Application.GetMatchInfo(matchId)}");
+                await Ui.ShowTextMessage("CAN'T REJECT (MAYBE IT'S ALREADY CONFIRMED OR REJECTED)");
             } 
         }
     }

@@ -102,7 +102,15 @@ namespace App
 
         public async Task<bool> TryConfirmMatchBy(string nickname, ObjectId matchId)
         {
-            var matchStatus = matchStatusRepository.GetById(matchId);
+            MatchStatusRecord matchStatus;
+            try
+            {
+                matchStatus = matchStatusRepository.GetById(matchId);
+            }
+            catch
+            {
+                return false;
+            }
 
             if (matchStatus.IsConfirmedByEachOne)
             {
@@ -127,13 +135,13 @@ namespace App
             return true;
         }
         
-        public async Task<bool> TryRejectMatchBy(string nickname, ObjectId matchId)
+        public async Task<(bool, Match)> TryRejectMatchBy(string nickname, ObjectId matchId)
         {
             var matchStatus = matchStatusRepository.GetById(matchId);
 
             if (matchStatus.IsConfirmedByEachOne)
             {
-                return false;
+                return (false, default);
             }
 
             var match = matchesRepository.GetById(matchId);
@@ -141,13 +149,13 @@ namespace App
 
             if (!(match.FirstPlayerId == playerId || match.SecondPlayerId == playerId))
             {
-                return false;
+                return (false, default);
             }
 
             await Task.Run(() => matchStatusRepository.DeleteById(matchId));
-            await Task.Run(() => matchesRepository.DeleteById(matchId));
+            var deleteMatch = await Task.Run(() => matchesRepository.DeleteById(matchId));
 
-            return true;
+            return (true, deleteMatch);
         }
 
         public Task<List<string>> GetMatchesInfos(IEnumerable<ObjectId> matchIds)
@@ -172,11 +180,19 @@ namespace App
                 RatingSystem.RatingByPlayerId.GetById(playersRepository.GetPlayerIdByNickname(nickname)));
         }
 
-        private string GetMatchInfo(Match match)
+        public string GetMatchInfo(Match match)
         {
             var nickname1 = playersRepository.GetNicknameByPlayerId(match.FirstPlayerId);
             var nickname2 = playersRepository.GetNicknameByPlayerId(match.SecondPlayerId);
-            var matchStatus = matchStatusRepository.GetById(match.Id);
+            var matchStatus = new MatchStatusRecord();
+            try
+            {
+                matchStatus = matchStatusRepository.GetById(match.Id);
+            }
+            catch
+            {
+                // ignore
+            }
 
             return $"MatchId: {match.Id}\n" +
                    $"Date: <b>{match.Date}</b>\n" +

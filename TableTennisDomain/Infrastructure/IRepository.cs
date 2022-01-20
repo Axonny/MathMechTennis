@@ -6,6 +6,6 @@
         TItem GetById(TKey id);
         void Update(TItem obj);
         void Save(TItem obj);
-        void DeleteById(TKey id);
+        TItem DeleteById(TKey id);
     }
 }

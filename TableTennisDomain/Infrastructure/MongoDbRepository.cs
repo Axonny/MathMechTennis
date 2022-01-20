@@ -36,9 +36,9 @@ namespace TableTennisDomain.Infrastructure
             Collection.InsertOne(obj);
         }
 
-        public void DeleteById(ObjectId id)
+        public TItem DeleteById(ObjectId id)
         {
-            Collection.FindOneAndDelete(x => x.Id == id);
+            return Collection.FindOneAndDelete(x => x.Id == id);
         }
     }
 }

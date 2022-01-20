@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using MongoDB.Bson;
+using TableTennisDomain;
 
 namespace App
 {
@@ -13,9 +14,10 @@ namespace App
         Task<List<string>> GetLastMatchesInfos(string nickname, int count);
         Task<bool> IsConfirmed(ObjectId matchId);
         Task<bool> TryConfirmMatchBy(string nickname, ObjectId matchId);
-        Task<bool> TryRejectMatchBy(string nickname, ObjectId matchId);
+        Task<(bool, Match)> TryRejectMatchBy(string nickname, ObjectId matchId);
         Task<List<string>> GetMatchesInfos(IEnumerable<ObjectId> matchIds);
         Task<long> GetChatIdByNickname(string nickname);
         string GetMatchInfo(ObjectId matchId);
+        string GetMatchInfo(Match match);
     }
 }
