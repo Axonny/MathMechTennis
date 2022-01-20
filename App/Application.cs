@@ -126,6 +126,29 @@ namespace App
 
             return true;
         }
+        
+        public async Task<bool> TryRejectMatchBy(string nickname, ObjectId matchId)
+        {
+            var matchStatus = matchStatusRepository.GetById(matchId);
+
+            if (matchStatus.IsConfirmedByEachOne)
+            {
+                return false;
+            }
+
+            var match = matchesRepository.GetById(matchId);
+            var playerId = playersRepository.GetPlayerIdByNickname(nickname);
+
+            if (!(match.FirstPlayerId == playerId || match.SecondPlayerId == playerId))
+            {
+                return false;
+            }
+
+            await Task.Run(() => matchStatusRepository.DeleteById(matchId));
+            await Task.Run(() => matchesRepository.DeleteById(matchId));
+
+            return true;
+        }
 
         public Task<List<string>> GetMatchesInfos(IEnumerable<ObjectId> matchIds)
         {

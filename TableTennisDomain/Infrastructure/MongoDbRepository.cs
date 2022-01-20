@@ -35,5 +35,10 @@ namespace TableTennisDomain.Infrastructure
         {
             Collection.InsertOne(obj);
         }
+
+        public void DeleteById(ObjectId id)
+        {
+            Collection.FindOneAndDelete(x => x.Id == id);
+        }
     }
 }

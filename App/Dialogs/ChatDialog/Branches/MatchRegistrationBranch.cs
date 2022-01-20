@@ -61,6 +61,11 @@ namespace App.Dialogs.ChatDialog.Branches
                     "Confirm",
                     manager.GetCommandByBranch<ConfirmationBranch>() + $" {matchId}",
                     player2);
+                await Ui.ShowMessageWithButtonFor(
+                    $"",
+                    "Reject",
+                    manager.GetCommandByBranch<RejectBranch>() + $" {matchId}",
+                    player2);
                 await Ui.ShowTextMessage("Match was saved!\n" +
                                          $"Waiting a confirmation by {player2}\n" +
                                          $"{Application.GetMatchInfo(matchId)}");
