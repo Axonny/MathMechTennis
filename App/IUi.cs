@@ -12,5 +12,12 @@ namespace App
             string buttonText,
             string callbackData,
             string receiverNickname);
+
+        Task ShowMessageWithTwoButtonFor(string messageText,
+            string firstButtonText,
+            string secondButtonText,
+            string firstCallbackData,
+            string secondCallbackData,
+            string receiverNickname);
     }
 }

@@ -55,5 +55,29 @@ namespace App
                 ParseMode.Html,
                 replyMarkup: inlineKeyboard);
         }
+        
+        public async Task ShowMessageWithTwoButtonFor(
+            string messageText, 
+            string firstButtonText,
+            string secondButtonText, 
+            string firstCallbackData,  
+            string secondCallbackData, 
+            string receiverNickname)
+        {
+            var inlineKeyboard = new InlineKeyboardMarkup(new[]
+            {
+                new []
+                {
+                    InlineKeyboardButton.WithCallbackData(firstButtonText, firstCallbackData),
+                    InlineKeyboardButton.WithCallbackData(secondButtonText, secondCallbackData)
+                }
+            });
+
+            await botClient.SendTextMessageAsync(
+                await application.GetChatIdByNickname(receiverNickname), 
+                messageText, 
+                ParseMode.Html,
+                replyMarkup: inlineKeyboard);
+        }
     }
 }

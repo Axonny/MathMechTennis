@@ -56,14 +56,11 @@ namespace App.Dialogs.ChatDialog.Branches
                 var matchId = await Application.RegisterMatch(player1, player2, gamesWon1, gamesWon2);
                 await Application.TryConfirmMatchBy(player1, matchId);
                 
-                await Ui.ShowMessageWithButtonFor(
+                await Ui.ShowMessageWithTwoButtonFor(
                     $"Confirmation Request from {player1}.\n{Application.GetMatchInfo(matchId)}",
                     "Confirm",
-                    manager.GetCommandByBranch<ConfirmationBranch>() + $" {matchId}",
-                    player2);
-                await Ui.ShowMessageWithButtonFor(
-                    $"",
                     "Reject",
+                    manager.GetCommandByBranch<ConfirmationBranch>() + $" {matchId}",
                     manager.GetCommandByBranch<RejectBranch>() + $" {matchId}",
                     player2);
                 await Ui.ShowTextMessage("Match was saved!\n" +
